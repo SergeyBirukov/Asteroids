@@ -36,6 +36,18 @@ def draw_lives(surf, x, y, lives, img):
         img_rect.y = y
         surf.blit(img, img_rect)
 
+        
+def draw_shield_bar(surf, x, y, pct):
+    if pct < 0:
+        pct = 0
+    BAR_LENGHT = 100
+    BAR_HEIGHT = 10
+    fill = (pct / 100) * BAR_LENGHT
+    outline_rect = pygame.Rect(x, y, BAR_LENGHT, BAR_HEIGHT)
+    fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
+    pygame.draw.rect(surf, GREEN, fill_rect)
+    pygame.draw.rect(surf, WHITE, outline_rect, 2)
+
 
 class Game:
     def __init__(self):
@@ -51,15 +63,13 @@ class Game:
         self.player_img = pygame.image.load(
             path.join(img_dir, "playerShip1_red.png")).convert()
         self.player_mini_img = pygame.transform.scale(self.player_img, (25, 19))
-        self.player_mini_img.set_colorkey(BLACK)
+        self.player_mini_img.set_colorkey((0, 0, 0))
         self.lazer = pygame.image.load(
             path.join(img_dir, "laserBlue03.png")).convert()
         self.asteroid_images = []
         self.asteroid_list = ["meteorBrown_big1.png", "meteorBrown_big2.png",
                        "meteorBrown_big4.png",
-                       "meteorBrown_med1.png", "meteorBrown_small1.png",
-                       "meteorBrown_tiny1.png",
-                       "meteorBrown_small2.png"]
+                       "meteorBrown_med1.png"]
         for img in self.asteroid_list:
             self.asteroid_images.append(
                 pygame.image.load(path.join(img_dir, img)).convert())
@@ -69,25 +79,6 @@ def new_asteroid(position_x, position_y):
     a = asteroid.Asteroid(random.choice(game.asteroid_images), position_x, position_y)
     all_sprites.add(a)
     asteroids.add(a)
-
-def draw_shield_bar(surf, x, y, pct):
-    if pct < 0:
-        pct = 0
-    BAR_LENGHT = 100
-    BAR_HEIGHT = 10
-    fill = (pct / 100) * BAR_LENGHT
-    outline_rect = pygame.Rect(x, y, BAR_LENGHT, BAR_HEIGHT)
-    fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
-    pygame.draw.rect(surf, GREEN, fill_rect)
-    pygame.draw.rect(surf, WHITE, outline_rect, 2)
-
-
-def draw_lives(surf, x, y, lives, img):
-    for i in range(lives):
-        img_rect = img.get_rect()
-        img_rect.x = x + 30 * i
-        img_rect.y = y
-        surf.blit(img, img_rect)
 
 
 def keep_player_on_screen():
@@ -102,15 +93,14 @@ def keep_player_on_screen():
 
 
 def keep_asteroid_on_screen(this_asteroid):
-    if this_asteroid.rect.x > WIDTH:
-        this_asteroid.set_position(0, player.rect.y)
-    if this_asteroid.rect.x < 0:
-        this_asteroid.set_position(WIDTH, player.rect.y)
-    if this_asteroid.rect.y < 0:
-        this_asteroid.set_position(player.rect.x, HEIGHT)
+    if this_asteroid.rect.x > WIDTH+30:
+        this_asteroid.set_position(0, this_asteroid.rect.y)
+    if this_asteroid.rect.x < -30:
+        this_asteroid.set_position(WIDTH, this_asteroid.rect.y)
+    # if this_asteroid.rect.y < 0:
+    #     this_asteroid.set_position(player.rect.x, HEIGHT)
     if this_asteroid.rect.y > HEIGHT:
-        this_asteroid.set_position(player.rect.x, 0)
-
+        this_asteroid.set_position(this_asteroid.rect.x, -60)
 
 
 if __name__ == '__main__':
