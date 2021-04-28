@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player_image
         self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()
-        self.radius = 20
+        self.radius = 50
         self.bullet = bullet_image
         self.start_position = {'x': position_x, 'y': position_y}
         self.rect.centerx, self.rect.centery = self.start_position.values()
@@ -51,14 +51,16 @@ class Player(pygame.sprite.Sprite):
         self.hidden = True
         self.hide_timer = pygame.time.get_ticks()
         self.rect.centerx = self.start_position['x']
-        self.rect.bottom = self.start_position['y'] + 200
+        self.rect.bottom = self.start_position['y'] + 500
 
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
+
     def set_position(self, x, y):
         self.rect.centerx, self.rect.centery = x, y
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, bullet_image):
