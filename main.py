@@ -116,7 +116,7 @@ if __name__ == '__main__':
     all_sprites.add(player)
     running = True
     clock = pygame.time.Clock()
-    for i in range(1):
+    for i in range(6):
         new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
     while running:
         # keep loop running at the right speed
@@ -170,19 +170,20 @@ if __name__ == '__main__':
             player.shield -= hit.radius
             new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
             if player.shield <= 0:
-                player.hide()
+                player.respawn()
                 player.lives -= 1
                 player.shield = 100
-                hide_time = pygame.time.get_ticks()
 
 
         keep_player_on_screen()
         for a in asteroids:
             keep_asteroid_on_screen(a)
         if player.lives == 0:
-            running = False
+            draw_text(game.screen, "GAME OVER", 56, WIDTH/2, HEIGHT/2, game.font_name)
 
-        # Draw 
+
+
+        # Draw
         game.screen.fill(BLACK)
         game.screen.blit(game.background, game.background_rect)
         all_sprites.draw(game.screen)
