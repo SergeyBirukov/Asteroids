@@ -87,7 +87,7 @@ def new_asteroid(position_x, position_y, image=None):
 
 def keep_player_on_screen():
     if player.rect.x > WIDTH + 40:
-        player.set_position(-40, player.rect.y)
+        player .set_position(-40, player.rect.y)
     if player.rect.x < -100:
         player.set_position(WIDTH + 40, player.rect.y)
     if player.rect.y < -100:
@@ -152,8 +152,8 @@ if __name__ == '__main__':
         hit_small_asteroids_counter = 0
         hits = pygame.sprite.groupcollide(asteroids, bullets, True, True)
         for hit in hits:
+            score += 70 - hit.radius
             if hit.image_orig != game.asteroid_images[0]:
-                score += 70 - hit.radius
                 new_asteroid(hit.rect.x - 5, hit.rect.y, game.asteroid_images[0])
                 new_asteroid(hit.rect.x + 5, hit.rect.y, game.asteroid_images[0])
                 if hit_small_asteroids_counter == 2:
@@ -164,8 +164,7 @@ if __name__ == '__main__':
 
 
         # check to see if asteroid hit the player
-        hits = pygame.sprite.spritecollide(player, asteroids, True,
-                                           pygame.sprite.collide_circle)
+        hits = pygame.sprite.spritecollide(player, asteroids, True)
         for hit in hits:
             player.shield -= hit.radius
             new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
@@ -174,20 +173,17 @@ if __name__ == '__main__':
                 player.lives -= 1
                 player.shield = 100
 
-
         keep_player_on_screen()
         for a in asteroids:
             keep_asteroid_on_screen(a)
         if player.lives == 0:
-            draw_text(game.screen, "GAME OVER", 56, WIDTH/2, HEIGHT/2, game.font_name)
-
+            running = False
 
 
         # Draw
         game.screen.fill(BLACK)
         game.screen.blit(game.background, game.background_rect)
         all_sprites.draw(game.screen)
-        pygame.draw.rect(game.screen, GREEN, (player.rect.x, player.rect.y, 5, 5))
         draw_text(game.screen, "Score: " + str(score), 18, WIDTH / 2, 10, game.font_name)
         draw_shield_bar(game.screen, 5, 5, player.shield)
         draw_lives(game.screen, WIDTH - 100, 5, player.lives, game.player_mini_img)
