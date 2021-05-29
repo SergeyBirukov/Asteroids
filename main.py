@@ -38,6 +38,7 @@ class Game:
         self.all_sprites.add(self.player)
         self.lvl_system = Levels.LevelSystem(self, self.player, self.resources.WIDTH, self.resources.HEIGHT)
         self.lvl_system.set_next_level()
+        self.running = False
 
     def new_asteroid(self, position_x, position_y):
         a = asteroid.Asteroid(random.choice(self.resources.asteroid_images), position_x, position_y)
@@ -68,7 +69,7 @@ class Game:
         for event in pygame.event.get():
             # check closing window
             if event.type == pygame.QUIT:
-                running = False
+                self.running = False
         keystate = pygame.key.get_pressed()
         if keystate[pygame.K_UP] or keystate[pygame.K_w]:
             player_moving = True
@@ -120,13 +121,14 @@ class Game:
         pygame.display.flip()
 
     def run(self):
-        running = True
+        self.running = True
         clock = pygame.time.Clock()
-        while running:
+        while self.running:
             clock.tick(FPS)
             if len(self.asteroids) == 0:
                 self.lvl_system.set_next_level()
             self.process_events()
+            self.process_hits()
             self.player.idle()
             self.keep_player_on_screen(self.player)
             for a in self.asteroids:
@@ -134,6 +136,7 @@ class Game:
             self.all_sprites.update()
             if self.player.lives == 0:
                 running = False
+            self.draw()
 
 
 if __name__ == '__main__':
