@@ -58,5 +58,5 @@ class Asteroid(pygame.sprite.Sprite):
             self.yPos -= part
 
     def set_position(self, x, y):
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.centerx = x
+        self.rect.centery = y
