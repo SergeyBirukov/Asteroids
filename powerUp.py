@@ -1,4 +1,5 @@
 import pygame
+import random
 from os import path
 from main import img_dir
 

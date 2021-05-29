@@ -4,6 +4,7 @@ import random
 import pygame
 import asteroid
 import player
+import Levels
 
 
 img_dir = path.join(path.dirname(__file__), "img")
@@ -36,7 +37,7 @@ def draw_lives(surf, x, y, lives, img):
         img_rect.y = y
         surf.blit(img, img_rect)
 
-
+        
 def draw_shield_bar(surf, x, y, pct):
     if pct < 0:
         pct = 0
@@ -67,44 +68,38 @@ class Game:
         self.lazer = pygame.image.load(
             path.join(img_dir, "laserBlue03.png")).convert()
         self.asteroid_images = []
-        self.asteroid_list = ["meteorBrown_med3.png", "meteorBrown_big1.png", "meteorBrown_big2.png",
+        self.asteroid_list = ["meteorBrown_big1.png", "meteorBrown_big2.png",
                        "meteorBrown_big4.png",
                        "meteorBrown_med1.png"]
         for img in self.asteroid_list:
             self.asteroid_images.append(
                 pygame.image.load(path.join(img_dir, img)).convert())
 
+    def new_asteroid(self, position_x, position_y):
+        a = asteroid.Asteroid(random.choice(game.asteroid_images), position_x, position_y)
+        all_sprites.add(a)
+        asteroids.add(a)
 
-def new_asteroid(position_x, position_y, image=None):
-    if image is None:
-        image = random.choice(game.asteroid_images)
-    else:
-        image = game.asteroid_images[0]
-    a = asteroid.Asteroid(image, position_x, position_y)
-    all_sprites.add(a)
-    asteroids.add(a)
+    def keep_player_on_screen(self):
+        if player.rect.x > WIDTH + 40:
+            player.set_position(-40, player.rect.y)
+        if player.rect.x < -100:
+            player.set_position(WIDTH + 40, player.rect.y)
+        if player.rect.y < -100:
+            player.set_position(player.rect.x, HEIGHT)
+        if player.rect.y > HEIGHT:
+            player.set_position(player.rect.x, 0)
 
+    def keep_asteroid_on_screen(self, this_asteroid):
+        if this_asteroid.rect.x > WIDTH+30:
+            this_asteroid.set_position(0, this_asteroid.rect.y)
+        if this_asteroid.rect.x < -30:
+            this_asteroid.set_position(WIDTH, this_asteroid.rect.y)
+        # if this_asteroid.rect.y < 0:
+        #     this_asteroid.set_position(player.rect.x, HEIGHT)
+        if this_asteroid.rect.y > HEIGHT:
+            this_asteroid.set_position(this_asteroid.rect.x, -60)
 
-def keep_player_on_screen():
-    if player.rect.x > WIDTH + 40:
-        player .set_position(-40, player.rect.y)
-    if player.rect.x < -100:
-        player.set_position(WIDTH + 40, player.rect.y)
-    if player.rect.y < -100:
-        player.set_position(player.rect.x, HEIGHT)
-    if player.rect.y > HEIGHT:
-        player.set_position(player.rect.x, 0)
-
-
-def keep_asteroid_on_screen(this_asteroid):
-    if this_asteroid.rect.x > WIDTH+30:
-        this_asteroid.set_position(0, this_asteroid.rect.y)
-    if this_asteroid.rect.x < -30:
-        this_asteroid.set_position(WIDTH, this_asteroid.rect.y)
-    # if this_asteroid.rect.y < 0:
-    #     this_asteroid.set_position(player.rect.x, HEIGHT)
-    if this_asteroid.rect.y > HEIGHT:
-        this_asteroid.set_position(this_asteroid.rect.x, -60)
 
 
 if __name__ == '__main__':
@@ -116,8 +111,10 @@ if __name__ == '__main__':
     all_sprites.add(player)
     running = True
     clock = pygame.time.Clock()
-    for i in range(6):
-        new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
+    lvl_system = Levels.LevelSystem(game, player, WIDTH, HEIGHT)
+    lvl_system.set_next_level()
+    # for i in range(8):
+    #     game.new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
     while running:
         # keep loop running at the right speed
         clock.tick(FPS)
@@ -126,19 +123,23 @@ if __name__ == '__main__':
             # check closing window
             if event.type == pygame.QUIT:
                 running = False
+        if len(asteroids) == 0:
+            lvl_system.set_next_level()
         keystate = pygame.key.get_pressed()
-        if keystate[pygame.K_UP]:
+        if keystate[pygame.K_UP] or keystate[pygame.K_w]:
             player_moving = True
             player.move_up()
         if keystate[pygame.K_DOWN]:
+            now = pygame.time.get_ticks()
+            if now - player.last_hyperspace > player.hyperspace_delay:
+                player.set_position(random.randrange(0, 800), random.randrange(0, 800))
+                player.last_hyperspace = now
+        if keystate[pygame.K_LEFT] or keystate[pygame.K_a]:
             player_moving = True
-            player.move_down()
-        if keystate[pygame.K_LEFT]:
+            player.rotate_left()
+        if keystate[pygame.K_RIGHT] or keystate[pygame.K_d]:
             player_moving = True
-            player.move_left()
-        if keystate[pygame.K_RIGHT]:
-            player_moving = True
-            player.move_right()
+            player.rotate_right()
         if keystate[pygame.K_SPACE]:
             now = pygame.time.get_ticks()
             if now - player.last_shoot > player.shoot_delay:
@@ -147,40 +148,30 @@ if __name__ == '__main__':
                 bullets.add(bullet)
                 player.last_shoot = now
         player.idle()
+        game.keep_player_on_screen()
+        for a in asteroids:
+            game.keep_asteroid_on_screen(a)
         all_sprites.update()
-        # check to see if bullet hit the asteroid
-        hit_small_asteroids_counter = 0
+        # check to see if bullet hit the mob
         hits = pygame.sprite.groupcollide(asteroids, bullets, True, True)
         for hit in hits:
             score += 70 - hit.radius
-            if hit.image_orig != game.asteroid_images[0]:
-                new_asteroid(hit.rect.x - 5, hit.rect.y, game.asteroid_images[0])
-                new_asteroid(hit.rect.x + 5, hit.rect.y, game.asteroid_images[0])
-                if hit_small_asteroids_counter == 2:
-                    hit_small_asteroids_counter = 0
-                    new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
-            else:
-                hit_small_asteroids_counter += 1
-
-
-        # check to see if asteroid hit the player
-        hits = pygame.sprite.spritecollide(player, asteroids, True)
+            # game.new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
+        # check to see if mob hit the player
+        hits = pygame.sprite.spritecollide(player, asteroids, True,
+                                           pygame.sprite.collide_circle)
         for hit in hits:
             player.shield -= hit.radius
-            new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
+            game.new_asteroid(random.randrange(WIDTH), random.randrange(-150, -50))
             if player.shield <= 0:
-                player.respawn()
+                player.hide()
                 player.lives -= 1
                 player.shield = 100
 
-        keep_player_on_screen()
-        for a in asteroids:
-            keep_asteroid_on_screen(a)
         if player.lives == 0:
             running = False
 
-
-        # Draw
+        # Draw / render
         game.screen.fill(BLACK)
         game.screen.blit(game.background, game.background_rect)
         all_sprites.draw(game.screen)

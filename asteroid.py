@@ -36,3 +36,15 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.x += self.speedx
         self.speedy = random.randrange(1, 8)
         self.speedx = random.randrange(-3, 3)
+        # if self.rect.top > HEIGHT + 10:
+        #     self.rect.x = random.randrange(WIDTH - self.rect.width)
+        #     self.rect.y = random.randrange(-100, -40)
+        #
+        # if self.rect.right < -20 or self.rect.left > WIDTH + 20 or self.rect.top > HEIGHT + 10:
+        #     self.rect.x = random.randrange(WIDTH - self.rect.width)
+        #     self.rect.y = random.randrange(-100, -40)
+        #
+
+    def set_position(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
