@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.last_hyperspace = pygame.time.get_ticks()
         self.hyperspace_delay = 250
         self.last_update = pygame.time.get_ticks()
+        self.mask = pygame.mask.from_surface(self.image)
 
     def shoot(self):
         return Bullet(self.rect.centerx, self.rect.centery, self.bullet, self.rot)
@@ -87,6 +88,7 @@ class Bullet(pygame.sprite.Sprite):
         self.speed_const = 10
         self.rot = rotation
         self.offset = 90
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         self.rect.y += -self.speed_const * math.sin(math.radians(self.rot + self.offset) % 360)
