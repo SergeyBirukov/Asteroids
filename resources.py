@@ -1,0 +1,29 @@
+import pygame
+from os import path
+
+WIDTH = 800
+HEIGHT = 800
+
+class Resources:
+    def __init__(self, img_dir):
+        self.WIDTH = WIDTH
+        self.HEIGHT = HEIGHT
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.background = pygame.image.load(
+            path.join(img_dir, "space_shooter_background.png")).convert()
+        self.background_rect = self.background.get_rect()
+        self.player_img = pygame.image.load(
+            path.join(img_dir, "playerShip1_red.png")).convert()
+        self.player_mini_img = pygame.transform.scale(self.player_img,
+                                                      (25, 19))
+        self.player_mini_img.set_colorkey((0, 0, 0))
+        self.lazer = pygame.image.load(
+            path.join(img_dir, "laserBlue03.png")).convert()
+        self.asteroid_images = []
+        self.asteroid_list = ["meteorBrown_big1.png", "meteorBrown_big2.png",
+                       "meteorBrown_big4.png",
+                       "meteorBrown_med1.png"]
+        for img in self.asteroid_list:
+            self.asteroid_images.append(
+                pygame.image.load(path.join(img_dir, img)).convert())
+        self.font_name = pygame.font.match_font('arial')

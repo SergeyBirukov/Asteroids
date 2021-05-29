@@ -22,6 +22,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.rot = 0
         self.rot_speed = random.randrange(-8, 8)
         self.last_update = pygame.time.get_ticks()
+        self.mask = pygame.mask.from_surface(self.image)
 
     def rotate(self):
         now = pygame.time.get_ticks()
@@ -55,18 +56,6 @@ class Asteroid(pygame.sprite.Sprite):
             part = math.ceil(self.yPos)
             self.rect.y += part
             self.yPos -= part
-        # self.rect.y += self.speedy
-        # self.rect.x += self.speedx
-        # self.speedy = random.randrange(1, 8)
-        # self.speedx = random.randrange(-3, 3)
-        # if self.rect.top > HEIGHT + 10:
-        #     self.rect.x = random.randrange(WIDTH - self.rect.width)
-        #     self.rect.y = random.randrange(-100, -40)
-        #
-        # if self.rect.right < -20 or self.rect.left > WIDTH + 20 or self.rect.top > HEIGHT + 10:
-        #     self.rect.x = random.randrange(WIDTH - self.rect.width)
-        #     self.rect.y = random.randrange(-100, -40)
-        #
 
     def set_position(self, x, y):
         self.rect.x = x
