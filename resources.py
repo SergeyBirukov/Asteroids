@@ -19,11 +19,21 @@ class Resources:
         self.player_mini_img.set_colorkey((0, 0, 0))
         self.lazer = pygame.image.load(
             path.join(img_dir, "laserBlue03.png")).convert()
-        self.asteroid_images = []
-        self.asteroid_list = ["meteorBrown_big1.png", "meteorBrown_big2.png",
+        self.asteroid_big = ["meteorBrown_big1.png", "meteorBrown_big2.png",
                        "meteorBrown_big4.png",
-                       "meteorBrown_med1.png"]
-        for img in self.asteroid_list:
-            self.asteroid_images.append(
+                       "meteorBrown_big3.png"]
+        self.asteroid_small = ["meteorBrown_small1.png", "meteorBrown_small2.png"]
+        self.asteroid_medium = ["meteorBrown_med1.png", "meteorBrown_med3.png"]
+        self.asteroid_big_images = []
+        self.asteroid_medium_images = []
+        self.asteroid_small_images = []
+        for img in self.asteroid_big:
+            self.asteroid_big_images.append(
                 pygame.image.load(path.join(img_dir, img)).convert())
+        for img in self.asteroid_medium:
+            self.asteroid_medium_images.append(
+                pygame.image.load(path.join(img_dir, img)).convert())
+            for img in self.asteroid_small:
+                self.asteroid_small_images.append(
+                    pygame.image.load(path.join(img_dir, img)).convert())
         self.font_name = pygame.font.match_font('arial')

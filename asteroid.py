@@ -6,8 +6,9 @@ BLACK = (0, 0, 0)
 
 
 class Asteroid(pygame.sprite.Sprite):
-    def __init__(self, image, position_x, position_y):
+    def __init__(self, image, size, position_x, position_y):
         pygame.sprite.Sprite.__init__(self)
+        self.type = size
         self.image_orig = image
         self.image_orig.set_colorkey(BLACK)
         self.image = self.image_orig.copy()

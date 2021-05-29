@@ -21,8 +21,8 @@ class Player(pygame.sprite.Sprite):
         self.yPos = 0
         self.speed_constant = 5
         self.shield = 100
-        self.shoot_delay = 0
-        # self.shoot_delay = 250
+        # self.shoot_delay = 0
+        self.shoot_delay = 250
         self.last_shoot = pygame.time.get_ticks()
         self.lives = 3
         self.hidden = False
@@ -30,7 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.can_shoot = True
         self.rot = 0
         self.offest = 90
-        self.rot_speed = 2
+        self.rot_speed = 5
         self.last_hyperspace = pygame.time.get_ticks()
         self.hyperspace_delay = 250
         self.last_update = pygame.time.get_ticks()
