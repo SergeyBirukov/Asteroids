@@ -53,23 +53,7 @@ class Game:
         if player.rect.centery < 0:
             player.set_position(player.rect.x, self.resources.HEIGHT)
         if player.rect.centery > self.resources.HEIGHT:
-#     def keep_player_on_screen(self, player):
-#         if player.rect.x > self.resources.WIDTH + 40:
-#             player.set_position(-40, player.rect.y)
-#         if player.rect.x < -100:
-#             player.set_position(self.resources.WIDTH + 40, player.rect.y)
-#         if player.rect.y < -100:
-#             player.set_position(player.rect.x, self.resources.HEIGHT)
-#         if player.rect.y > self.resources.HEIGHT:
             player.set_position(player.rect.x, 0)
-        # if player.rect.x > WIDTH + 40:
-        #     player.set_position(-40, player.rect.y)
-        # if player.rect.x < -100:
-        #     player.set_position(WIDTH + 40, player.rect.y)
-        # if player.rect.y < -100:
-        #     player.set_position(player.rect.x, HEIGHT)
-        # if player.rect.y > HEIGHT:
-        #     player.set_position(player.rect.x, 0)
 
     def keep_asteroid_on_screen(self, this_asteroid):
         if this_asteroid.rect.centerx > self.resources.WIDTH:
@@ -80,14 +64,6 @@ class Game:
             this_asteroid.set_position(this_asteroid.rect.x, self.resources.HEIGHT)
         if this_asteroid.rect.centery > self.resources.HEIGHT:
             this_asteroid.set_position(this_asteroid.rect.x, 0)
-        # if this_asteroid.rect.x > self.resources.WIDTH+30:
-        #     this_asteroid.set_position(0, this_asteroid.rect.y)
-        # if this_asteroid.rect.x < -30:
-        #     this_asteroid.set_position(self.resources.WIDTH, this_asteroid.rect.y)
-        # # if this_asteroid.rect.y < 0:
-        # #     this_asteroid.set_position(player.rect.x, HEIGHT)
-        # if this_asteroid.rect.y > self.resources.HEIGHT + 30:
-        #     this_asteroid.set_position(this_asteroid.rect.x, -60)
 
     def process_events(self):
         for event in pygame.event.get():
@@ -118,12 +94,11 @@ class Game:
                 self.player.last_shoot = now
 
     def process_hits(self):
-        hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True,
-                                          True)
+        hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
         for hit in hits:
             self.score += 70 - hit.radius
 
-        hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, pygame.sprite.collide_circle)
+        hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
         for hit in hits:
             self.player.shield -= hit.radius
             game.new_asteroid(random.randrange(self.resources.WIDTH), random.randrange(-150, -50))

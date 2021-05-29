@@ -91,6 +91,7 @@ class Player(pygame.sprite.Sprite):
             part = math.ceil(self.yPos)
             self.rect.y += part
             self.yPos -= part
+        self.mask = pygame.mask.from_surface(self.image)
 
     def set_position(self, x, y):
         self.rect.centerx, self.rect.centery = x, y
