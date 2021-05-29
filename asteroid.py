@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 BLACK = (0, 0, 0)
 
@@ -14,8 +15,10 @@ class Asteroid(pygame.sprite.Sprite):
         self.radius = int(self.rect.width * .85 / 2)
         self.rect.x = position_x
         self.rect.y = position_y
-        self.speedy = random.randrange(1, 8)
-        self.speedx = random.randrange(-3, 3)
+        self.xPos = 0
+        self.yPos = 0
+        self.speedy = random.uniform(-5, 5)
+        self.speedx = random.uniform(-5, 5)
         self.rot = 0
         self.rot_speed = random.randrange(-8, 8)
         self.last_update = pygame.time.get_ticks()
@@ -26,16 +29,36 @@ class Asteroid(pygame.sprite.Sprite):
             self.last_update = now
             self.rot = (self.rot + self.rot_speed) % 360
             self.image = pygame.transform.rotate(self.image_orig, self.rot)
+            self.rect = self.image.get_rect(
+                center=self.image.get_rect(center=(self.rect.centerx, self.rect.centery)).center)
 
     def set_position(self, x, y):
         self.rect.centerx, self.rect.centery = x, y
 
     def update(self):
         self.rotate()
-        self.rect.y += self.speedy
-        self.rect.x += self.speedx
-        self.speedy = random.randrange(1, 8)
-        self.speedx = random.randrange(-3, 3)
+        self.xPos += self.speedx
+        self.yPos += self.speedy
+        if self.xPos >= 1:
+            part = math.floor(self.xPos)
+            self.rect.x += part
+            self.xPos -= part
+        if self.xPos <= -1:
+            part = math.ceil(self.xPos)
+            self.rect.x += part
+            self.xPos -= part
+        if self.yPos >= 1:
+            part = math.floor(self.yPos)
+            self.rect.y += part
+            self.yPos -= part
+        if self.yPos <= -1:
+            part = math.ceil(self.yPos)
+            self.rect.y += part
+            self.yPos -= part
+        # self.rect.y += self.speedy
+        # self.rect.x += self.speedx
+        # self.speedy = random.randrange(1, 8)
+        # self.speedx = random.randrange(-3, 3)
         # if self.rect.top > HEIGHT + 10:
         #     self.rect.x = random.randrange(WIDTH - self.rect.width)
         #     self.rect.y = random.randrange(-100, -40)

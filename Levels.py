@@ -31,6 +31,6 @@ class LevelSystem:
             self.game.new_asteroid(random.randrange(self.width), random.randrange(-150, -50))
 
     def prepare_level_two(self):
-        self.player.set_position(self.width/2, self.height)
+        self.player.set_position(self.width/2, self.height/2)
         for i in range(30):
             self.game.new_asteroid(random.randrange(self.width), random.randrange(-150, -50))

@@ -81,24 +81,32 @@ class Game:
         asteroids.add(a)
 
     def keep_player_on_screen(self):
-        if player.rect.x > WIDTH + 40:
-            player.set_position(-40, player.rect.y)
-        if player.rect.x < -100:
-            player.set_position(WIDTH + 40, player.rect.y)
-        if player.rect.y < -100:
+        if player.rect.centerx > WIDTH:
+            player.set_position(0, player.rect.y)
+        if player.rect.centerx < 0:
+            player.set_position(WIDTH, player.rect.y)
+        if player.rect.centery < 0:
             player.set_position(player.rect.x, HEIGHT)
-        if player.rect.y > HEIGHT:
+        if player.rect.centery > HEIGHT:
             player.set_position(player.rect.x, 0)
+        # if player.rect.x > WIDTH + 40:
+        #     player.set_position(-40, player.rect.y)
+        # if player.rect.x < -100:
+        #     player.set_position(WIDTH + 40, player.rect.y)
+        # if player.rect.y < -100:
+        #     player.set_position(player.rect.x, HEIGHT)
+        # if player.rect.y > HEIGHT:
+        #     player.set_position(player.rect.x, 0)
 
     def keep_asteroid_on_screen(self, this_asteroid):
-        if this_asteroid.rect.x > WIDTH+30:
+        if this_asteroid.rect.centerx > WIDTH:
             this_asteroid.set_position(0, this_asteroid.rect.y)
-        if this_asteroid.rect.x < -30:
+        if this_asteroid.rect.centerx < 0:
             this_asteroid.set_position(WIDTH, this_asteroid.rect.y)
-        # if this_asteroid.rect.y < 0:
-        #     this_asteroid.set_position(player.rect.x, HEIGHT)
-        if this_asteroid.rect.y > HEIGHT:
-            this_asteroid.set_position(this_asteroid.rect.x, -60)
+        if this_asteroid.rect.centery < 0:
+            this_asteroid.set_position(this_asteroid.rect.x, HEIGHT)
+        if this_asteroid.rect.centery > HEIGHT:
+            this_asteroid.set_position(this_asteroid.rect.x, 0)
 
 
 

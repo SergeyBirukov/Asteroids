@@ -17,9 +17,12 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx, self.rect.centery = self.start_position['x'], self.start_position['y']
         self.speedx = 0
         self.speedy = 0
+        self.xPos = 0
+        self.yPos = 0
         self.speed_constant = 5
         self.shield = 100
-        self.shoot_delay = 250
+        self.shoot_delay = 0
+        # self.shoot_delay = 250
         self.last_shoot = pygame.time.get_ticks()
         self.lives = 3
         self.hidden = False
@@ -53,13 +56,13 @@ class Player(pygame.sprite.Sprite):
 
     def idle(self):
         if self.speedx > 0:
-            self.speedx -= 0.1
+            self.speedx -= 0.05
         if self.speedx < 0:
-            self.speedx += 0.1
+            self.speedx += 0.05
         if self.speedy > 0:
-            self.speedy -= 0.1
+            self.speedy -= 0.05
         if self.speedy < 0:
-            self.speedy += 0.1
+            self.speedy += 0.05
 
     def hide(self):
         # hide the player temporarily
@@ -69,8 +72,24 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = self.start_position['y'] + 200
 
     def update(self):
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
+        self.xPos += self.speedx
+        self.yPos += self.speedy
+        if self.xPos >= 1:
+            part = math.floor(self.xPos)
+            self.rect.x += part
+            self.xPos -= part
+        if self.xPos <= -1:
+            part = math.ceil(self.xPos)
+            self.rect.x += part
+            self.xPos -= part
+        if self.yPos >= 1:
+            part = math.floor(self.yPos)
+            self.rect.y += part
+            self.yPos -= part
+        if self.yPos <= -1:
+            part = math.ceil(self.yPos)
+            self.rect.y += part
+            self.yPos -= part
 
     def set_position(self, x, y):
         self.rect.centerx, self.rect.centery = x, y
