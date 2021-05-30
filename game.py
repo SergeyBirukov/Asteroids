@@ -39,6 +39,7 @@ class Game:
         self.lvl_system.set_next_level()
         self.running = False
         self.isPause = False
+        self.isGameOver = False
         self.click = False
         self.mx, self.my = pygame.mouse.get_pos()
 
@@ -135,7 +136,9 @@ class Game:
         self.resources.screen.fill(BLACK)
         self.resources.screen.blit(self.resources.background, self.resources.background_rect)
         self.all_sprites.draw(self.resources.screen)
-        if self.isPause:
+        if self.isGameOver:
+            self.game_over_interface()
+        elif self.isPause:
             self.pause_interface()
         else:
             Interface.draw_text(self.resources.screen, "Score: " + str(len(self.asteroids)),
@@ -151,6 +154,19 @@ class Game:
         Interface.draw_text(self.resources.screen, "Pause",
                             52, self.resources.WIDTH / 2, self.resources.HEIGHT/2 - 100,
                             self.resources.font_name, WHITE)
+        button1 = pygame.Rect(self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2, 200, 50)
+        pygame.draw.rect(self.resources.screen, (255, 255, 255), button1)
+        Interface.draw_text(screen=self.resources.screen, text="Main menu", size=28, x=self.resources.screen.get_width() / 2,
+                            y=self.resources.screen.get_height() / 2 + 10,
+                            font=self.resources.font_name, color=BLACK)
+        if button1.collidepoint(self.mx, self.my):
+            if self.click:
+                self.running = False
+
+    def game_over_interface(self):
+        Interface.draw_text(self.resources.screen, "Game Over",
+                            52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - 100,
+                            self.resources.font_name, RED)
         button1 = pygame.Rect(self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2, 200, 50)
         pygame.draw.rect(self.resources.screen, (255, 255, 255), button1)
         Interface.draw_text(screen=self.resources.screen, text="Main menu", size=28, x=self.resources.screen.get_width() / 2,
@@ -177,9 +193,9 @@ class Game:
                 self._keep_on_screen(a)
             for bullet in self.bullets:
                 self._keep_on_screen(bullet)
-            if not self.isPause:
+            if not self.isPause and not self.isGameOver:
                 self.all_sprites.update()
             if self.player.lives == 0:
-                self.running = False
+                self.isGameOver = True
             self._draw()
 
