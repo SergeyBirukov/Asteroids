@@ -81,13 +81,13 @@ class Player(pygame.sprite.Sprite):
 
     def idle(self):
         if self.speedx > 0:
-            self.speedx -= 0.05
+            self.speedx -= 0.07
         if self.speedx < 0:
-            self.speedx += 0.05
+            self.speedx += 0.07
         if self.speedy > 0:
-            self.speedy -= 0.05
+            self.speedy -= 0.07
         if self.speedy < 0:
-            self.speedy += 0.05
+            self.speedy += 0.07
 
     def hide(self):
         # hide the player temporarily
