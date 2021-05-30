@@ -7,6 +7,7 @@ from player import Player
 import Levels
 from interface import Interface
 from resources import Resources
+from powerUp import Pow
 
 pygame.init()
 
@@ -34,7 +35,8 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
-        self.player = Player(resources.player_img, resources.lazer, resources.WIDTH / 2, resources.HEIGHT - 250)
+        self.powerups_sprites = pygame.sprite.Group()
+        self.player = Player(resources.player_img, resources.player_with_shield_image, resources.lazer, resources.WIDTH / 2, resources.HEIGHT - 250)
         self.all_sprites.add(self.player)
         self.lvl_system = Levels.LevelSystem(self, self.player, self.resources.WIDTH, self.resources.HEIGHT)
         self.lvl_system.set_next_level()
@@ -86,23 +88,39 @@ class Game:
                 self.player.last_shoot = now
 
     def _process_hits(self):
-        hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
-        for hit in hits.keys():
+        bullet_hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
+        for hit in bullet_hits.keys():
             self.score += 70 - hit.radius
             if hit.type == 2:
+                rnd = random.randrange(1, 10)
+                if rnd > 5:
+                    pow = Pow(hit.rect.center, img_dir)
+                    self.all_sprites.add(pow)
+                    self.powerups_sprites.add(pow)
                 game.new_asteroid(hit.rect.x, hit.rect.y, 1)
                 game.new_asteroid(hit.rect.x, hit.rect.y, 1)
             if hit.type == 1:
                 game.new_asteroid(hit.rect.x, hit.rect.y, 0)
                 game.new_asteroid(hit.rect.x, hit.rect.y, 0)
 
-        hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
-        for hit in hits:
-            self.player.shield -= hit.radius
-            if self.player.shield <= 0:
+        player_hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
+        for hit in player_hits:
+            if not self.player.is_shield_on:
+                self.player.HP -= hit.radius
+            if self.player.HP <= 0:
                 self.player.hide()
                 self.player.lives -= 1
-                self.player.shield = 100
+                self.player.gun_level = 0
+                self.player.HP = 100
+
+        bonus_hits = pygame.sprite.spritecollide(self.player, self.powerups_sprites, True, collided=pygame.sprite.collide_mask)
+        for hit in bonus_hits:
+            if hit.type == "live" and self.player.lives < 3:
+                self.player.lives += 1
+            if hit.type == "gun" and self.player.gun_level <2:
+                self.player.gun_level_up()
+            if hit.type == "shield":
+                self.player.shield_on()
 
     def _draw(self):
         self.resources.screen.fill(BLACK)
@@ -111,7 +129,7 @@ class Game:
         Interface.draw_text(self.resources.screen, "Score: " + str(len(self.asteroids)),
                             18, self.resources.WIDTH / 2, 10,
                             self.resources.font_name)
-        Interface.draw_shield_bar(self.resources.screen, 5, 5, self.player.shield)
+        Interface.draw_shield_bar(self.resources.screen, 5, 5, self.player.HP)
         Interface.draw_lives(self.resources.screen, self.resources.WIDTH - 100, 5,
                              self.player.lives, self.resources.player_mini_img)
         pygame.display.flip()
@@ -128,9 +146,10 @@ class Game:
             self.player.idle()
             if not self.player.hidden:
                 self._keep_on_screen(self.player)
-
             for a in self.asteroids:
                 self._keep_on_screen(a)
+            for bullet in self.bullets:
+                self._keep_on_screen(bullet)
             self.all_sprites.update()
             if self.player.lives == 0:
                 self.running = False
