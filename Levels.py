@@ -17,6 +17,10 @@ class LevelSystem:
             self.current_level += 1
         self.levels[self.current_level]()
 
+    def set_first_level(self):
+        self.current_level = 0
+        self._prepare_level_one()
+
     def _prepare_level_one(self):
         self.player.set_position(self.width/2, self.height/2)
         for i in range(4):

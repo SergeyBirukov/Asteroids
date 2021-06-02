@@ -15,7 +15,7 @@ BLUE = (0, 0, 255)
 class MainMenu:
     def __init__(self, game):
         self.clock = pygame.time.Clock()
-        self.resources = Resources(img_dir)
+        self.resources = Resources()
         self.screen = self.resources.screen
         self.game = game
 
@@ -45,6 +45,7 @@ class MainMenu:
                                 font=self.resources.font_name, color=BLACK)
             if button1.collidepoint(mx, my):
                 if click:
+                    self.game.reset()
                     self.game.run()
 
             if button2.collidepoint(mx, my):

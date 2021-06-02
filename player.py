@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.hide_time = 1000
         self.can_shoot = True
         self.rot = 0
-        self.offest = 90
+        self.offset = 90
         self.rot_speed = 3
         self.last_hyperspace = pygame.time.get_ticks()
         self.hyperspace_delay = 250
@@ -65,9 +65,9 @@ class Player(pygame.sprite.Sprite):
 
     def move_up(self):
         if abs(self.speedy) < self.max_speed:
-            self.speedy += -self.acceleration * math.sin(math.radians(self.rot + self.offest) % 360)
+            self.speedy += -self.acceleration * math.sin(math.radians(self.rot + self.offset) % 360)
         if abs(self.speedx)< self.max_speed:
-            self.speedx += self.acceleration * math.cos(math.radians(self.rot + self.offest) % 360)
+            self.speedx += self.acceleration * math.cos(math.radians(self.rot + self.offset) % 360)
 
     def rotate_left(self):
         self.rot = (self.rot + self.rot_speed) % 360
@@ -162,6 +162,4 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
         self.rect.y += -self.speed_const * math.sin(math.radians(self.rot + self.offset) % 360)
         self.rect.x += self.speed_const * math.cos(math.radians(self.rot + self.offset) % 360)
-        # kill if it moves thr top of the screen
-        if self.rect.bottom < 0:
-            self.kill()
+

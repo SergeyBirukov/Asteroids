@@ -9,8 +9,7 @@ from powerUp import Pow
 from os import path
 import sys
 
-img_dir = path.join(path.dirname(__file__), "img")
-sound_dir = path.join(path.dirname(__file__), "sound")
+
 
 FPS = 60
 score = 0
@@ -96,7 +95,6 @@ class Game:
                     self.bullets.add(bullet)
                     self.player.last_shoot = now
 
-
     def _process_hits(self):
         bullet_hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
         for hit in bullet_hits.keys():
@@ -104,7 +102,7 @@ class Game:
             if hit.type == 2:
                 rnd = random.randrange(1, 10)
                 if rnd > 5:
-                    pow = Pow(hit.rect.center, img_dir)
+                    pow = Pow(hit.rect.center, self.resources.img_dir)
                     self.all_sprites.add(pow)
                     self.powerups_sprites.add(pow)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 1)
@@ -141,7 +139,7 @@ class Game:
         elif self.isPause:
             self.pause_interface()
         else:
-            Interface.draw_text(self.resources.screen, "Score: " + str(len(self.asteroids)),
+            Interface.draw_text(self.resources.screen, "Score: " + str(self.score),
                                 18, self.resources.WIDTH / 2, 10,
                                 self.resources.font_name, WHITE)
             Interface.draw_shield_bar(self.resources.screen, 5, 5, self.player.HP)
@@ -149,6 +147,24 @@ class Game:
                                  self.player.lives, self.resources.player_mini_img)
 
         pygame.display.flip()
+
+    def reset(self):
+        self.score = 0
+        self.player.gun_level = 0
+        self.player.lives = 3
+        self.player.speedx = 0
+        self.player.speedy
+        self.player.set_position(*self.player.start_position.values())
+        self.isGameOver = False
+        self.player.HP = 100
+        self.player.rot = 0
+        self.player.player_with_shield_image = self.resources.player_with_shield_image
+        self.player.current_image = self.resources.player_img
+        self.player.image = self.player.current_image.copy()
+        for i in self.asteroids:
+            i.kill()
+        self.lvl_system.current_level = 0
+        self.lvl_system.set_first_level()
 
     def pause_interface(self):
         Interface.draw_text(self.resources.screen, "Pause",
