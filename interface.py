@@ -1,4 +1,5 @@
 import pygame
+from math import floor
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -32,3 +33,22 @@ class Interface:
         fill_rect = pygame.Rect(x, y, fill, BAR_HEIGHT)
         pygame.draw.rect(screen, GREEN, fill_rect)
         pygame.draw.rect(screen, WHITE, outline_rect, 2)
+
+    class Button:
+        def __init__(self, screen, x, y, size_x, size_y, text, font, button_color=(255, 255, 255), text_color=(0, 0, 0)):
+            self.text = text
+            self.pos_x, self.pos_y = x, y
+            self.size_x, self.size_y = size_x, size_y
+            self.button_color = button_color
+            self.text_color = text_color
+            self.screen = screen
+            self.font = font
+            self.rect = pygame.Rect(self.pos_x, self.pos_y, self.size_x, self.size_y)
+
+        def draw(self):
+            pygame.draw.rect(self.screen, self.button_color, self.rect)
+            Interface.draw_text(self.screen, self.text, floor(self.size_y * 0.6), (2 * self.pos_x + self.size_x) / 2,
+                                (1.92 * self.pos_y + self.size_y) / 2, self.font, self.text_color)
+
+
+

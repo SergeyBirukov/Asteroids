@@ -4,15 +4,10 @@ import asteroid
 from player import Player
 import Levels
 from interface import Interface
-from resources import Resources
 from powerUp import Pow
-from os import path
 import sys
 
-
-
 FPS = 60
-score = 0
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -31,8 +26,9 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
-        self.powerups_sprites = pygame.sprite.Group()
-        self.player = Player(resources.player_img, resources.player_with_shield_image, resources.lazer, resources.WIDTH / 2, resources.HEIGHT - 250)
+        self.power_up_sprites = pygame.sprite.Group()
+        self.player = Player(resources.player_img, resources.player_with_shield_image, resources.lazer,
+                             resources.WIDTH / 2, resources.HEIGHT - 250)
         self.all_sprites.add(self.player)
         self.lvl_system = Levels.LevelSystem(self, self.player, self.resources.WIDTH, self.resources.HEIGHT)
         self.lvl_system.set_next_level()
@@ -41,13 +37,15 @@ class Game:
         self.isGameOver = False
         self.click = False
         self.mx, self.my = pygame.mouse.get_pos()
+        self.need_input = False
+        self.input_text = ""
 
     def new_asteroid(self, position_x, position_y, size):
         if size == 2:
             a = asteroid.Asteroid(random.choice(self.resources.asteroid_big_images), size, position_x, position_y)
         if size == 1:
             a = asteroid.Asteroid(random.choice(self.resources.asteroid_medium_images), size, position_x, position_y)
-        if size == 0:
+        else:
             a = asteroid.Asteroid(random.choice(self.resources.asteroid_small_images), size, position_x, position_y)
         self.all_sprites.add(a)
         self.asteroids.add(a)
@@ -70,30 +68,41 @@ class Game:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_TAB:
+                    self.need_input = not self.need_input
+                elif event.key == pygame.K_ESCAPE:
                     self.isPause = not self.isPause
+                elif self.need_input:
+                    if event.key == pygame.K_RETURN:
+                        self.need_input = False
+                        self.input_text = ""
+                    if event.key == pygame.K_BACKSPACE:
+                        self.input_text = self.input_text[:-1]
+                    elif len(self.input_text) < 15:
+                        self.input_text += event.unicode
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.click = True
-        if not self.isPause:
-            key_state = pygame.key.get_pressed()
-            if key_state[pygame.K_UP] or key_state[pygame.K_w]:
-                self.player.move_up()
-            if key_state[pygame.K_DOWN]:
-                now = pygame.time.get_ticks()
-                if now - self.player.last_hyperspace > self.player.hyperspace_delay:
-                    self.player.set_position(random.randrange(0, 800), random.randrange(0, 800))
-                    self.player.last_hyperspace = now
-            if key_state[pygame.K_LEFT] or key_state[pygame.K_a]:
-                self.player.rotate_left()
-            if key_state[pygame.K_RIGHT] or key_state[pygame.K_d]:
-                self.player.rotate_right()
-            if key_state[pygame.K_SPACE]:
-                now = pygame.time.get_ticks()
-                if now - self.player.last_shoot > self.player.shoot_delay:
-                    bullet = self.player.shoot()
-                    self.all_sprites.add(bullet)
-                    self.bullets.add(bullet)
-                    self.player.last_shoot = now
+        if self.isPause:
+            return
+        key_state = pygame.key.get_pressed()
+        if key_state[pygame.K_UP] or key_state[pygame.K_w]:
+            self.player.move_up()
+        if key_state[pygame.K_DOWN]:
+            now = pygame.time.get_ticks()
+            if now - self.player.last_hyperspace > self.player.hyperspace_delay:
+                self.player.set_position(random.randrange(0, 800), random.randrange(0, 800))
+                self.player.last_hyperspace = now
+        if key_state[pygame.K_LEFT] or key_state[pygame.K_a]:
+            self.player.rotate_left()
+        if key_state[pygame.K_RIGHT] or key_state[pygame.K_d]:
+            self.player.rotate_right()
+        if key_state[pygame.K_SPACE]:
+            now = pygame.time.get_ticks()
+            if now - self.player.last_shoot > self.player.shoot_delay:
+                bullet = self.player.shoot()
+                self.all_sprites.add(bullet)
+                self.bullets.add(bullet)
+                self.player.last_shoot = now
 
     def _process_hits(self):
         bullet_hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
@@ -104,7 +113,7 @@ class Game:
                 if rnd > 5:
                     pow = Pow(hit.rect.center, self.resources.img_dir)
                     self.all_sprites.add(pow)
-                    self.powerups_sprites.add(pow)
+                    self.power_up_sprites.add(pow)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 1)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 1)
             if hit.type == 1:
@@ -121,7 +130,7 @@ class Game:
                 self.player.gun_level = 0
                 self.player.HP = 100
 
-        bonus_hits = pygame.sprite.spritecollide(self.player, self.powerups_sprites, True, collided=pygame.sprite.collide_mask)
+        bonus_hits = pygame.sprite.spritecollide(self.player, self.power_up_sprites, True, collided=pygame.sprite.collide_mask)
         for hit in bonus_hits:
             if hit.type == "live" and self.player.lives < 3:
                 self.player.lives += 1
@@ -135,9 +144,9 @@ class Game:
         self.resources.screen.blit(self.resources.background, self.resources.background_rect)
         self.all_sprites.draw(self.resources.screen)
         if self.isGameOver:
-            self.game_over_interface()
+            self.game_over()
         elif self.isPause:
-            self.pause_interface()
+            self.pause()
         else:
             Interface.draw_text(self.resources.screen, "Score: " + str(self.score),
                                 18, self.resources.WIDTH / 2, 10,
@@ -145,7 +154,6 @@ class Game:
             Interface.draw_shield_bar(self.resources.screen, 5, 5, self.player.HP)
             Interface.draw_lives(self.resources.screen, self.resources.WIDTH - 100, 5,
                                  self.player.lives, self.resources.player_mini_img)
-
         pygame.display.flip()
 
     def reset(self):
@@ -153,7 +161,7 @@ class Game:
         self.player.gun_level = 0
         self.player.lives = 3
         self.player.speedx = 0
-        self.player.speedy
+        self.player.speedy = 0
         self.player.set_position(*self.player.start_position.values())
         self.isGameOver = False
         self.player.HP = 100
@@ -166,29 +174,27 @@ class Game:
         self.lvl_system.current_level = 0
         self.lvl_system.set_first_level()
 
-    def pause_interface(self):
-        Interface.draw_text(self.resources.screen, "Pause",
-                            52, self.resources.WIDTH / 2, self.resources.HEIGHT/2 - 100,
-                            self.resources.font_name, WHITE)
-        button1 = pygame.Rect(self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2, 200, 50)
-        pygame.draw.rect(self.resources.screen, (255, 255, 255), button1)
-        Interface.draw_text(screen=self.resources.screen, text="Main menu", size=28, x=self.resources.screen.get_width() / 2,
-                            y=self.resources.screen.get_height() / 2 + 10,
-                            font=self.resources.font_name, color=BLACK)
-        if button1.collidepoint(self.mx, self.my):
+    def pause(self):
+        Interface.draw_text(self.resources.screen, "Pause", 52, self.resources.WIDTH / 2,
+                            self.resources.HEIGHT/2 - 100, self.resources.font_name, WHITE)
+        button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width()*0.75, self.resources.screen.get_height()*0.9,
+                         150, 50, "Main menu", self.resources.font_name)
+        button1.draw()
+        if button1.rect.collidepoint(self.mx, self.my):
             if self.click:
                 self.running = False
 
-    def game_over_interface(self):
+    def game_over(self):
         Interface.draw_text(self.resources.screen, "Game Over",
                             52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - 100,
                             self.resources.font_name, RED)
-        button1 = pygame.Rect(self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2, 200, 50)
-        pygame.draw.rect(self.resources.screen, (255, 255, 255), button1)
+        button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2,
+                         200, 50, "Main menu", self.resources.font_name)
+        button1.draw()
         Interface.draw_text(screen=self.resources.screen, text="Main menu", size=28, x=self.resources.screen.get_width() / 2,
                             y=self.resources.screen.get_height() / 2 + 10,
                             font=self.resources.font_name, color=BLACK)
-        if button1.collidepoint(self.mx, self.my):
+        if button1.rect.collidepoint(self.mx, self.my):
             if self.click:
                 self.running = False
 

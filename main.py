@@ -1,4 +1,3 @@
-from os import path
 from resources import Resources
 from game import Game
 from main_menu import MainMenu

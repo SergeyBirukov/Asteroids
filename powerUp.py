@@ -8,10 +8,9 @@ BLACK = (0, 0, 0)
 class Pow(pygame.sprite.Sprite):
     def __init__(self, center, img_dir):
         pygame.sprite.Sprite.__init__(self)
-        self.powerup_images = {}
-        self.powerup_images["shield"] = pygame.image.load(path.join(img_dir, "shield.png")).convert()
-        self.powerup_images["gun"] = pygame.image.load(path.join(img_dir, "bolt.png")).convert()
-        self.powerup_images["live"] = pygame.image.load(path.join(img_dir, "Heart.png")).convert()
+        self.powerup_images = {"shield": pygame.image.load(path.join(img_dir, "shield.png")).convert(),
+                               "gun": pygame.image.load(path.join(img_dir, "bolt.png")).convert(),
+                               "live": pygame.image.load(path.join(img_dir, "Heart.png")).convert()}
         self.type = random.choice(["gun", "shield", "live"])
         self.image = self.powerup_images[self.type]
         self.image.set_colorkey(BLACK)

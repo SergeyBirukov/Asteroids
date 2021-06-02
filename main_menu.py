@@ -34,21 +34,19 @@ class MainMenu:
             self.screen.fill((0, 0, 0))
             Interface.draw_text(screen=self.screen, text="Asteroids", size=52, x=self.screen.get_width()/2, y=self.screen.get_height()/2-200,
                            font=self.resources.font_name, color=WHITE)
+            button1 = Interface.Button(self.screen, self.screen.get_width()/2-100, self.screen.get_height()/2,
+                                       200, 50, "Play", self.resources.font_name)
+            button2 = Interface.Button(self.screen, self.screen.get_width()/2-100, self.screen.get_height()/2+100,
+                                       200, 50, "Exit", self.resources.font_name)
+            button1.draw()
+            button2.draw()
 
-            button1 = pygame.Rect(self.screen.get_width()/2-100, self.screen.get_height()/2, 200, 50)
-            button2 = pygame.Rect(self.screen.get_width()/2-100, self.screen.get_height()/2+100, 200, 50)
-            pygame.draw.rect(self.screen, (255, 255, 255), button1)
-            pygame.draw.rect(self.screen, (255, 255, 255), button2)
-            Interface.draw_text(screen=self.screen, text="Play", size=28, x=self.screen.get_width()/2, y=self.screen.get_height()/2+10,
-                           font=self.resources.font_name, color=BLACK)
-            Interface.draw_text(screen=self.screen, text="Exit", size=28, x=self.screen.get_width() / 2, y=self.screen.get_height() / 2 + 110,
-                                font=self.resources.font_name, color=BLACK)
-            if button1.collidepoint(mx, my):
+            if button1.rect.collidepoint(mx, my):
                 if click:
                     self.game.reset()
                     self.game.run()
 
-            if button2.collidepoint(mx, my):
+            if button2.rect.collidepoint(mx, my):
                 if click:
                     pygame.quit()
                     sys.exit()
