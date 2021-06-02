@@ -13,11 +13,13 @@ BLUE = (0, 0, 255)
 
 
 class MainMenu:
-    def __init__(self, game):
+    def __init__(self, game, leaderboard):
         self.clock = pygame.time.Clock()
         self.resources = Resources()
         self.screen = self.resources.screen
         self.game = game
+        self.clock = pygame.time.Clock()
+        self.leaderboard = leaderboard
 
     def draw_text(screen, text, size, x, y, font):
         font = pygame.font.Font(font, size)
@@ -36,17 +38,24 @@ class MainMenu:
                            font=self.resources.font_name, color=WHITE)
             button1 = Interface.Button(self.screen, self.screen.get_width()/2-100, self.screen.get_height()/2,
                                        200, 50, "Play", self.resources.font_name)
-            button2 = Interface.Button(self.screen, self.screen.get_width()/2-100, self.screen.get_height()/2+100,
+            button2 = Interface.Button(self.screen, self.screen.get_width() / 2 - 100, self.screen.get_height() / 2 + 100,
+                                       200, 50, "Leaderboard", self.resources.font_name)
+            button3 = Interface.Button(self.screen, self.screen.get_width()/2-100, self.screen.get_height()/2+200,
                                        200, 50, "Exit", self.resources.font_name)
+
             button1.draw()
             button2.draw()
-
+            button3.draw()
             if button1.rect.collidepoint(mx, my):
                 if click:
                     self.game.reset()
                     self.game.run()
 
             if button2.rect.collidepoint(mx, my):
+                if click:
+                    self.leaderboard.run()
+
+            if button3.rect.collidepoint(mx, my):
                 if click:
                     pygame.quit()
                     sys.exit()

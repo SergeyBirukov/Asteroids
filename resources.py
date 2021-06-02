@@ -9,6 +9,7 @@ class Resources:
     def __init__(self):
         self.img_dir = path.join(path.dirname(__file__), "img")
         self.sound_dir = path.join(path.dirname(__file__), "sound")
+        self.leaderboard_filename = "leaderboard"
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))

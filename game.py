@@ -2,10 +2,11 @@ import random
 import pygame
 import asteroid
 from player import Player
-import Levels
+import levels
 from interface import Interface
 from powerUp import Pow
 import sys
+from leaderboard import LeaderBoard
 
 FPS = 60
 
@@ -19,6 +20,7 @@ BLUE = (0, 0, 255)
 class Game:
     def __init__(self, resources):
         pygame.mixer.init()
+        self.leaderboard = LeaderBoard()
         self.score = 0
         self.resources = resources
         pygame.display.set_caption("Asteroids")
@@ -30,7 +32,7 @@ class Game:
         self.player = Player(resources.player_img, resources.player_with_shield_image, resources.lazer,
                              resources.WIDTH / 2, resources.HEIGHT - 250)
         self.all_sprites.add(self.player)
-        self.lvl_system = Levels.LevelSystem(self, self.player, self.resources.WIDTH, self.resources.HEIGHT)
+        self.lvl_system = levels.LevelSystem(self, self.player, self.resources.WIDTH, self.resources.HEIGHT)
         self.lvl_system.set_next_level()
         self.running = False
         self.isPause = False
@@ -45,7 +47,7 @@ class Game:
             a = asteroid.Asteroid(random.choice(self.resources.asteroid_big_images), size, position_x, position_y)
         if size == 1:
             a = asteroid.Asteroid(random.choice(self.resources.asteroid_medium_images), size, position_x, position_y)
-        else:
+        if size == 0:
             a = asteroid.Asteroid(random.choice(self.resources.asteroid_small_images), size, position_x, position_y)
         self.all_sprites.add(a)
         self.asteroids.add(a)
@@ -69,7 +71,7 @@ class Game:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_TAB:
-                    self.need_input = not self.need_input
+                    print(self.leaderboard.get_leaderboard())
                 elif event.key == pygame.K_ESCAPE:
                     self.isPause = not self.isPause
                 elif self.need_input:
@@ -82,7 +84,7 @@ class Game:
                         self.input_text += event.unicode
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.click = True
-        if self.isPause:
+        if self.isPause or self.isGameOver:
             return
         key_state = pygame.key.get_pressed()
         if key_state[pygame.K_UP] or key_state[pygame.K_w]:
@@ -159,11 +161,12 @@ class Game:
     def reset(self):
         self.score = 0
         self.player.gun_level = 0
-        self.player.lives = 3
+        self.player.lives = 1
         self.player.speedx = 0
         self.player.speedy = 0
         self.player.set_position(*self.player.start_position.values())
         self.isGameOver = False
+        self.need_input = False
         self.player.HP = 100
         self.player.rot = 0
         self.player.player_with_shield_image = self.resources.player_with_shield_image
@@ -178,24 +181,40 @@ class Game:
         Interface.draw_text(self.resources.screen, "Pause", 52, self.resources.WIDTH / 2,
                             self.resources.HEIGHT/2 - 100, self.resources.font_name, WHITE)
         button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width()*0.75, self.resources.screen.get_height()*0.9,
-                         150, 50, "Main menu", self.resources.font_name)
+                                   150, 50, "Main menu", self.resources.font_name)
         button1.draw()
         if button1.rect.collidepoint(self.mx, self.my):
             if self.click:
                 self.running = False
 
     def game_over(self):
+        self.need_input = True
         Interface.draw_text(self.resources.screen, "Game Over",
                             52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - 100,
                             self.resources.font_name, RED)
-        button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2,
-                         200, 50, "Main menu", self.resources.font_name)
+        button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width() * 0.75, self.resources.screen.get_height() * 0.9,
+                                   150, 50, "Main menu", self.resources.font_name)
+        button2 = Interface.Button(self.resources.screen, self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2*1.3,
+                         200, 50, "Save score", self.resources.font_name)
+        entry_field = pygame.Rect(self.resources.screen.get_width()*0.15, self.resources.screen.get_height() / 2,
+                         self.resources.screen.get_width()*0.7, 50)
+        pygame.draw.rect(self.resources.screen, WHITE, entry_field)
+        Interface.draw_text(self.resources.screen, "Enter your name: ", 30,
+                            self.resources.screen.get_width()*0.28, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
+        Interface.draw_input(self.resources.screen, self.input_text, 30,
+                            self.resources.screen.get_width()/2-70, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
+
         button1.draw()
-        Interface.draw_text(screen=self.resources.screen, text="Main menu", size=28, x=self.resources.screen.get_width() / 2,
-                            y=self.resources.screen.get_height() / 2 + 10,
-                            font=self.resources.font_name, color=BLACK)
+        button2.draw()
         if button1.rect.collidepoint(self.mx, self.my):
             if self.click:
+                self.running = False
+
+        if button2.rect.collidepoint(self.mx, self.my):
+            if self.click and self.input_text != "":
+                self.leaderboard.save_score(self.input_text, self.score)
+                self.input_text = ""
+                self.leaderboard.run()
                 self.running = False
 
     def run(self):
@@ -220,4 +239,5 @@ class Game:
             if self.player.lives == 0:
                 self.isGameOver = True
             self._draw()
+            self.clock.tick(60)
 

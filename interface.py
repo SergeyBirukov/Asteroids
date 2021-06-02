@@ -16,6 +16,13 @@ class Interface:
         text_rect.midtop = (x, y)
         screen.blit(text_surface, text_rect)
 
+    def draw_input(screen, text, size, x, y, font, color):
+        font = pygame.font.Font(font, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x, y)
+        screen.blit(text_surface, text_rect)
+
     def draw_lives(screen, x, y, lives, img):
         for i in range(lives):
             img_rect = img.get_rect()
