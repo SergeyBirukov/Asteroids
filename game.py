@@ -133,6 +133,7 @@ class Game:
 
     def _process_hits(self):
         bullet_hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
+        bullet_hits.update(pygame.sprite.groupcollide(self.ufos, self.bullets, True, True, collided=pygame.sprite.collide_mask))
         for hit in bullet_hits.keys():
             self.score += 70 - hit.radius
             pygame.mixer.Sound.play(self.resources.explosion_sound2)
@@ -149,6 +150,7 @@ class Game:
                 self.new_asteroid(hit.rect.x, hit.rect.y, 0)
             if hit.type == "UFO":
                 self.score += 70 - hit.radius
+
 
         player_hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
         for hit in player_hits:
