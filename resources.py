@@ -1,14 +1,20 @@
 import pygame
 from os import path
 
-WIDTH = 800
+WIDTH = 1000
 HEIGHT = 800
 
 
 class Resources:
     def __init__(self):
-        self.img_dir = path.join(path.dirname(__file__), "img")
-        self.sound_dir = path.join(path.dirname(__file__), "sound")
+        self.img_dir = path.join(path.dirname(__file__), "img\\")
+        self.sound_dir = path.join(path.dirname(__file__), "sound\\")
+        pygame.mixer.init()
+        pygame.mixer.music.load(self.sound_dir + "music.ogg")
+        self.shoot_sound = pygame.mixer.Sound(self.sound_dir + "Laser_Shoot.wav")
+        self.explosion_sound = pygame.mixer.Sound(self.sound_dir + "Explosion1.wav")
+        self.explosion_sound2 = pygame.mixer.Sound(self.sound_dir + "Explosion2.wav")
+        self.bonus_sound = pygame.mixer.Sound(self.sound_dir + "bonus.mp3")
         self.leaderboard_filename = "leaderboard"
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT

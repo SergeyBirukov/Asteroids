@@ -9,7 +9,7 @@ BLUE = (0, 0, 255)
 
 
 class Interface:
-    def draw_text(screen, text, size, x, y, font, color):
+    def draw_text_centered(screen, text, size, x, y, font, color):
         font = pygame.font.Font(font, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
@@ -54,8 +54,8 @@ class Interface:
 
         def draw(self):
             pygame.draw.rect(self.screen, self.button_color, self.rect)
-            Interface.draw_text(self.screen, self.text, floor(self.size_y * 0.6), (2 * self.pos_x + self.size_x) / 2,
-                                (1.92 * self.pos_y + self.size_y) / 2, self.font, self.text_color)
+            Interface.draw_text_centered(self.screen, self.text, floor(self.size_y * 0.6), (2 * self.pos_x + self.size_x) / 2,
+                                         (1.92 * self.pos_y + self.size_y) / 2, self.font, self.text_color)
 
 
 
