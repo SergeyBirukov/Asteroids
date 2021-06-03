@@ -20,10 +20,9 @@ BLUE = (0, 0, 255)
 
 class Game:
     def __init__(self, resources):
-        pygame.mixer.init()
+        self.resources = resources
         self.leaderboard = LeaderBoard()
         self.score = 0
-        self.resources = resources
         pygame.display.set_caption("Asteroids")
         self.clock = pygame.time.Clock()
         self.all_sprites = pygame.sprite.Group()
@@ -126,6 +125,7 @@ class Game:
         if key_state[pygame.K_SPACE]:
             now = pygame.time.get_ticks()
             if now - self.player.last_shoot > self.player.shoot_delay:
+                pygame.mixer.Sound.play(self.resources.shoot_sound)
                 bullet = self.player.shoot()
                 self.all_sprites.add(bullet)
                 self.bullets.add(bullet)
@@ -135,6 +135,7 @@ class Game:
         bullet_hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
         for hit in bullet_hits.keys():
             self.score += 70 - hit.radius
+            pygame.mixer.Sound.play(self.resources.explosion_sound2)
             if hit.type == 2:
                 rnd = random.randrange(1, 10)
                 if rnd > 5:
@@ -151,6 +152,7 @@ class Game:
 
         player_hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
         for hit in player_hits:
+            pygame.mixer.Sound.play(self.resources.explosion_sound)
             if not self.player.is_shield_on:
                 self.player.HP -= hit.radius
             if self.player.HP <= 0:
@@ -181,6 +183,7 @@ class Game:
 
         bonus_hits = pygame.sprite.spritecollide(self.player, self.power_up_sprites, True, collided=pygame.sprite.collide_mask)
         for hit in bonus_hits:
+            pygame.mixer.Sound.play(self.resources.bonus_sound)
             if hit.type == "live" and self.player.lives < 3:
                 self.player.lives += 1
             if hit.type == "gun" and self.player.gun_level <2:
@@ -197,9 +200,9 @@ class Game:
         elif self.isPause:
             self.pause()
         else:
-            Interface.draw_text(self.resources.screen, "Score: " + str(self.score),
-                                18, self.resources.WIDTH / 2, 10,
-                                self.resources.font_name, WHITE)
+            Interface.draw_text_centered(self.resources.screen, "Score: " + str(self.score),
+                                         18, self.resources.WIDTH / 2, 10,
+                                         self.resources.font_name, WHITE)
             Interface.draw_shield_bar(self.resources.screen, 5, 5, self.player.HP)
             Interface.draw_lives(self.resources.screen, self.resources.WIDTH - 100, 5,
                                  self.player.lives, self.resources.player_mini_img)
@@ -208,7 +211,7 @@ class Game:
     def reset(self):
         self.score = 0
         self.player.gun_level = 0
-        self.player.lives = 1
+        self.player.lives = 3
         self.player.speedx = 0
         self.player.speedy = 0
         self.player.set_position(*self.player.start_position.values())
@@ -223,12 +226,14 @@ class Game:
             i.kill()
         for i in self.ufos:
             i.kill()
+        for i in self.power_up_sprites:
+            i.kill()
         self.lvl_system.current_level = 0
         self.lvl_system.set_first_level()
 
     def pause(self):
-        Interface.draw_text(self.resources.screen, "Pause", 52, self.resources.WIDTH / 2,
-                            self.resources.HEIGHT/2 - 100, self.resources.font_name, WHITE)
+        Interface.draw_text_centered(self.resources.screen, "Pause", 52, self.resources.WIDTH / 2,
+                                     self.resources.HEIGHT / 2 - 100, self.resources.font_name, WHITE)
         button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width()*0.75, self.resources.screen.get_height()*0.9,
                                    150, 50, "Main menu", self.resources.font_name)
         button1.draw()
@@ -238,9 +243,9 @@ class Game:
 
     def game_over(self):
         self.need_input = True
-        Interface.draw_text(self.resources.screen, "Game Over",
-                            52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - 100,
-                            self.resources.font_name, RED)
+        Interface.draw_text_centered(self.resources.screen, "Game Over",
+                                     52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - self.resources.HEIGHT*0.12,
+                                     self.resources.font_name, RED)
         button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width() * 0.75, self.resources.screen.get_height() * 0.9,
                                    150, 50, "Main menu", self.resources.font_name)
         button2 = Interface.Button(self.resources.screen, self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2*1.3,
@@ -248,8 +253,8 @@ class Game:
         entry_field = pygame.Rect(self.resources.screen.get_width()*0.15, self.resources.screen.get_height() / 2,
                          self.resources.screen.get_width()*0.7, 50)
         pygame.draw.rect(self.resources.screen, WHITE, entry_field)
-        Interface.draw_text(self.resources.screen, "Enter your name: ", 30,
-                            self.resources.screen.get_width()*0.28, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
+        Interface.draw_text_centered(self.resources.screen, "Enter your name: ", 30,
+                                     self.resources.screen.get_width() * 0.28, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
         Interface.draw_input(self.resources.screen, self.input_text, 30,
                             self.resources.screen.get_width()/2-70, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
 

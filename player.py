@@ -93,6 +93,7 @@ class Player(pygame.sprite.Sprite):
     def hide(self):
         # hide the player temporarily
         self.hidden = True
+        self.can_shoot = False
         self.hide_timer = pygame.time.get_ticks()
         self.rect.centerx = self.start_position['x']-1000
         self.rect.bottom = self.start_position['y']-1000
@@ -114,6 +115,7 @@ class Player(pygame.sprite.Sprite):
         self.yPos += self.speedy
         if pygame.time.get_ticks() - self.hide_timer > self.hide_time and self.hidden == True:
             self.hidden = False
+            self.can_shoot = True
             self.rect.centerx, self.rect.centery = self.start_position['x'], self.start_position['y']
         if pygame.time.get_ticks() - self.shield_timer > self.shield_time:
             self.shield_off()

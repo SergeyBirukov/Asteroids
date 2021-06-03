@@ -30,12 +30,13 @@ class MainMenu:
 
     def menu(self):
         pygame.init()
+        pygame.mixer.music.play()
         click = False
         while True:
             mx, my = pygame.mouse.get_pos()
             self.screen.fill((0, 0, 0))
-            Interface.draw_text(screen=self.screen, text="Asteroids", size=52, x=self.screen.get_width()/2, y=self.screen.get_height()/2-200,
-                           font=self.resources.font_name, color=WHITE)
+            Interface.draw_text_centered(screen=self.screen, text="Asteroids", size=52, x=self.screen.get_width() / 2, y=self.screen.get_height() / 2 - 200,
+                                         font=self.resources.font_name, color=WHITE)
             button1 = Interface.Button(self.screen, self.screen.get_width()/2-100, self.screen.get_height()/2,
                                        200, 50, "Play", self.resources.font_name)
             button2 = Interface.Button(self.screen, self.screen.get_width() / 2 - 100, self.screen.get_height() / 2 + 100,
