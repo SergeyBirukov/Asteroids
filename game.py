@@ -226,9 +226,9 @@ class Game:
         self.player.image = self.player.current_image.copy()
         for i in self.asteroids:
             i.kill()
-        for i in self.ufos:
-            i.kill()
         for i in self.power_up_sprites:
+            i.kill()
+        for i in self.ufos:
             i.kill()
         self.lvl_system.current_level = 0
         self.lvl_system.set_first_level()
