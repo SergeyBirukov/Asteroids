@@ -22,6 +22,7 @@ class Resources:
         self.player_mini_img.set_colorkey((0, 0, 0))
         self.player_with_shield_image = self.lazer = pygame.image.load(path.join(self.img_dir, "ship_with_shield.png")).convert()
         self.lazer = pygame.image.load(path.join(self.img_dir, "laserBlue03.png")).convert()
+        self.ufo_image = pygame.image.load(path.join(self.img_dir, "enemyBlack2.png")).convert()
         self.asteroid_big = ["meteorBrown_big1.png", "meteorBrown_big2.png", "meteorBrown_big4.png", "meteorBrown_big3.png"]
         self.asteroid_small = ["meteorBrown_small1.png", "meteorBrown_small2.png"]
         self.asteroid_medium = ["meteorBrown_med1.png", "meteorBrown_med3.png"]

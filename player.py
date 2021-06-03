@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.width = self.image.get_width()
         self.height = self.image.get_height()
+        self.type = "Player"
         self.radius = 20
         self.bullet = bullet_image
         self.start_position = {'x': position_x, 'y': position_y}
@@ -66,7 +67,7 @@ class Player(pygame.sprite.Sprite):
     def move_up(self):
         if abs(self.speedy) < self.max_speed:
             self.speedy += -self.acceleration * math.sin(math.radians(self.rot + self.offset) % 360)
-        if abs(self.speedx)< self.max_speed:
+        if abs(self.speedx) < self.max_speed:
             self.speedx += self.acceleration * math.cos(math.radians(self.rot + self.offset) % 360)
 
     def rotate_left(self):
@@ -145,6 +146,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image_orig.set_colorkey((0, 0, 0))
         self.image = pygame.transform.rotate(self.image_orig, rotation)
         self.rect = self.image.get_rect()
+        self.type = "Bullet"
         self.rect.centery = y
         self.rect.centerx = x
         self.speed_const = 10

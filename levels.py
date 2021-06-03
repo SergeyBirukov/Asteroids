@@ -9,6 +9,8 @@ class LevelSystem:
         self.height = height
         self.levels = [self._prepare_level_one, self._prepare_level_two]
         self.current_level = -1
+        self.ufo_start_poses_x = [0, width]
+        self.ufo_start_poses_y = [0, height]
 
     def set_next_level(self):
         if self.current_level + 1 == len(self.levels):
@@ -23,7 +25,7 @@ class LevelSystem:
 
     def _prepare_level_one(self):
         self.player.set_position(self.width/2, self.height/2)
-        for i in range(4):
+        for i in range(1):
             self.game.new_asteroid(random.randrange(self.width), random.randrange(50, 150), 2)
             self.game.new_asteroid(random.randrange(self.width), random.randrange(50, 150), 1)
 
