@@ -1,6 +1,7 @@
 import random
 import pygame
 import asteroid
+import UFO
 from player import Player
 import levels
 from interface import Interface
@@ -26,7 +27,11 @@ class Game:
         self.clock = pygame.time.Clock()
         self.all_sprites = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.ufos = pygame.sprite.Group()
+        self.ufo_last_spawned = pygame.time.get_ticks()
+        self.ufo_spawn_delay = 10000
         self.bullets = pygame.sprite.Group()
+        self.ufo_bullets = pygame.sprite.Group()
         self.power_up_sprites = pygame.sprite.Group()
         self.player = Player(resources.player_img, resources.player_with_shield_image, resources.lazer,
                              resources.WIDTH / 2, resources.HEIGHT - 250)
@@ -51,7 +56,27 @@ class Game:
         self.all_sprites.add(a)
         self.asteroids.add(a)
 
+    def get_player_position(self):
+        return self.player.rect.centerx, self.player.rect.centery
+
+    def new_UFO(self):
+        now = pygame.time.get_ticks()
+        if now - self.ufo_last_spawned > self.ufo_spawn_delay:
+            self.ufo_last_spawned = now
+            u = UFO.UFO(self.resources.ufo_image, self.resources.lazer, self.resources.WIDTH, self.resources.HEIGHT)
+            self.all_sprites.add(u)
+            self.ufos.add(u)
+
+    def _UFO_try_to_shoot(self, u):
+        bullet = u.shoot(pygame.time.get_ticks(), self.get_player_position())
+        if bullet is not None:
+            self.all_sprites.add(bullet)
+            self.ufo_bullets.add(bullet)
+
     def _keep_on_screen(self, obj):
+        # if obj.type == "UFO" and (obj.rect.centerx > self.resources.WIDTH or obj.rect.centerx < 0 or obj.rect.centery < 0 or obj.rect.centery > self.resources.HEIGHT):
+        #     obj.kill()
+        #     return
         if obj.rect.centerx > self.resources.WIDTH:
             obj.set_position(0, obj.rect.y)
         if obj.rect.centerx < 0:
@@ -122,10 +147,32 @@ class Game:
             if hit.type == 1:
                 self.new_asteroid(hit.rect.x, hit.rect.y, 0)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 0)
+            if hit.type == "UFO":
+                self.score += 70 - hit.radius
 
         player_hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
         for hit in player_hits:
             pygame.mixer.Sound.play(self.resources.explosion_sound)
+            if not self.player.is_shield_on:
+                self.player.HP -= hit.radius
+            if self.player.HP <= 0:
+                self.player.hide()
+                self.player.lives -= 1
+                self.player.gun_level = 0
+                self.player.HP = 100
+
+        ufos_hits = pygame.sprite.spritecollide(self.player, self.ufos, True, collided=pygame.sprite.collide_mask)
+        for hit in ufos_hits:
+            if not self.player.is_shield_on:
+                self.player.HP -= hit.radius
+            if self.player.HP <= 0:
+                self.player.hide()
+                self.player.lives -= 1
+                self.player.gun_level = 0
+                self.player.HP = 100
+
+        ufo_bullets_hits = pygame.sprite.spritecollide(self.player, self.ufo_bullets, True, collided=pygame.sprite.collide_mask)
+        for hit in ufo_bullets_hits:
             if not self.player.is_shield_on:
                 self.player.HP -= hit.radius
             if self.player.HP <= 0:
@@ -178,6 +225,8 @@ class Game:
         for i in self.asteroids:
             i.kill()
         for i in self.power_up_sprites:
+            i.kill()
+        for i in self.ufos:
             i.kill()
         self.lvl_system.current_level = 0
         self.lvl_system.set_first_level()
@@ -233,6 +282,10 @@ class Game:
             self._process_events()
             self._process_hits()
             self.player.idle()
+            self.new_UFO()
+            for u in self.ufos:
+                self._UFO_try_to_shoot(u)
+                self._keep_on_screen(u)
             if not self.player.hidden:
                 self._keep_on_screen(self.player)
             for a in self.asteroids:
