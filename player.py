@@ -31,6 +31,8 @@ class Player(pygame.sprite.Sprite):
         self.last_shoot = pygame.time.get_ticks()
         self.lives = 3
         self.gun_level = 0
+        self.gun_powerup_time = 10000
+        self.gun_timer = pygame.time.get_ticks()
         self.is_shield_on = False
         self.shield_timer = pygame.time.get_ticks()
         self.shield_time = 5000
@@ -47,6 +49,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def gun_level_up(self):
+        self.gun_timer = pygame.time.get_ticks()
         self.gun_level += 1
         self.shoot_delay = 400
 
@@ -118,6 +121,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.centerx, self.rect.centery = self.start_position['x'], self.start_position['y']
         if pygame.time.get_ticks() - self.shield_timer > self.shield_time:
             self.shield_off()
+        if pygame.time.get_ticks() - self.gun_timer > self.gun_powerup_time and self.gun_level > 0:
+            self.gun_level -= 1
         if self.xPos >= 1:
             part = math.floor(self.xPos)
             self.rect.x += part

@@ -59,6 +59,7 @@ class Game:
     def get_player_position(self):
         return self.player.rect.centerx, self.player.rect.centery
 
+
     def new_UFO(self):
         now = pygame.time.get_ticks()
         if now - self.ufo_last_spawned > self.ufo_spawn_delay:
@@ -67,6 +68,7 @@ class Game:
             self.all_sprites.add(u)
             self.ufos.add(u)
 
+
     def _UFO_try_to_shoot(self, u):
         bullet = u.shoot(pygame.time.get_ticks(), self.get_player_position())
         if bullet is not None:
@@ -74,9 +76,6 @@ class Game:
             self.ufo_bullets.add(bullet)
 
     def _keep_on_screen(self, obj):
-        # if obj.type == "UFO" and (obj.rect.centerx > self.resources.WIDTH or obj.rect.centerx < 0 or obj.rect.centery < 0 or obj.rect.centery > self.resources.HEIGHT):
-        #     obj.kill()
-        #     return
         if obj.rect.centerx > self.resources.WIDTH:
             obj.set_position(0, obj.rect.y)
         if obj.rect.centerx < 0:
@@ -89,14 +88,11 @@ class Game:
     def _process_events(self):
         self.click = False
         for event in pygame.event.get():
-            # check closing window
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_TAB:
-                    print(self.leaderboard.get_leaderboard())
-                elif event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE:
                     self.isPause = not self.isPause
                 elif self.need_input:
                     if event.key == pygame.K_RETURN:
@@ -116,6 +112,7 @@ class Game:
         if key_state[pygame.K_DOWN]:
             now = pygame.time.get_ticks()
             if now - self.player.last_hyperspace > self.player.hyperspace_delay:
+                pygame.mixer.Sound.play(self.resources.teleport_sound)
                 self.player.set_position(random.randrange(0, 800), random.randrange(0, 800))
                 self.player.last_hyperspace = now
         if key_state[pygame.K_LEFT] or key_state[pygame.K_a]:
@@ -133,7 +130,7 @@ class Game:
 
     def _process_hits(self):
         bullet_hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
-        bullet_hits.update(pygame.sprite.groupcollide(self.ufos, self.bullets, True, True, collided=pygame.sprite.collide_mask))
+        bullet_hits.update(pygame.sprite.groupcollide(self.ufos, self.bullets, False, True, collided=pygame.sprite.collide_mask))
         for hit in bullet_hits.keys():
             self.score += 70 - hit.radius
             pygame.mixer.Sound.play(self.resources.explosion_sound2)
@@ -149,6 +146,8 @@ class Game:
                 self.new_asteroid(hit.rect.x, hit.rect.y, 0)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 0)
             if hit.type == "UFO":
+                hit.HP -= 1
+                print(hit.HP)
                 self.score += 70 - hit.radius
 
 
@@ -236,8 +235,8 @@ class Game:
         pygame.draw.rect(self.resources.screen, WHITE, entry_field)
         Interface.draw_text_centered(self.resources.screen, "Enter your name: ", 30,
                                      self.resources.screen.get_width() * 0.28, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
-        Interface.draw_input(self.resources.screen, self.input_text, 30,
-                            self.resources.screen.get_width()/2-70, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
+        Interface.draw_text(self.resources.screen, self.input_text, 30,
+                            self.resources.screen.get_width() / 2 - self.resources.WIDTH*0.05, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
 
         button1.draw()
         button2.draw()
@@ -263,7 +262,6 @@ class Game:
             self._process_events()
             self._process_hits()
             self.player.idle()
-            self.new_UFO()
             for u in self.ufos:
                 self._UFO_try_to_shoot(u)
                 self._keep_on_screen(u)
@@ -275,6 +273,7 @@ class Game:
                 self._keep_on_screen(bullet)
             if not self.isPause and not self.isGameOver:
                 self.all_sprites.update()
+                self.new_UFO()
             if self.player.lives == 0:
                 self.isGameOver = True
             self._draw()

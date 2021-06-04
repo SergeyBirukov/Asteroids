@@ -16,6 +16,7 @@ class UFO(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.width = self.image.get_width()
         self.height = self.image.get_height()
+        self.HP = 3
         self.type = "UFO"
         self.radius = 20
         self.bullet = bullet_image
@@ -27,7 +28,6 @@ class UFO(pygame.sprite.Sprite):
         self.xPos = 0
         self.yPos = 0
         self.acceleration = 0.3
-        self.HP = 100
         self.shoot_delay = 3000
         self.last_shoot = pygame.time.get_ticks()
         self.offset = 90
@@ -73,9 +73,7 @@ class UFO(pygame.sprite.Sprite):
             self.speedx += self.acceleration * math.cos(math.radians(self.rot) % 360)
 
     def rotate(self):
-        self.image = pygame.transform.rotate(self.ufo_image, self.rot + self.offset)
-        self.rect = self.image.get_rect(
-            center=self.image.get_rect(center=(self.rect.centerx, self.rect.centery)).center)
+        pass
 
     def set_position(self, x, y):
         self.rect.centerx, self.rect.centery = x, y
@@ -93,6 +91,8 @@ class UFO(pygame.sprite.Sprite):
             return Bullet(self.rect.centerx, self.rect.centery, self.bullet, degs)
 
     def update(self):
+        if self.HP <= 0:
+            self.kill()
         self.move_up()
         self.xPos += self.speedx
         self.yPos += self.speedy

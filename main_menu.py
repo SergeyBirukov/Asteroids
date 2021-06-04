@@ -31,6 +31,7 @@ class MainMenu:
     def menu(self):
         pygame.mixer.music.load(self.resources.sound_dir + "music.ogg")
         pygame.mixer.init()
+        pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play()
         click = False
         while True:

@@ -66,8 +66,8 @@ class LeaderBoard:
         line = pygame.Rect(self.width * 0.15, self.height*0.15 + self.height*0.1*number,
                            self.width * 0.7, 50)
         pygame.draw.rect(self.resources.screen, (255, 255, 255), line)
-        Interface.draw_input(self.resources.screen, name, 32,  self.width * 0.16, self.height*0.15 + self.height*0.1*number, self.resources.font_name, (0, 0, 0))
-        Interface.draw_input(self.resources.screen, str(score), 32,  self.width * 0.6, self.height*0.15 + self.height*0.1*number, self.resources.font_name, (0, 0, 0))
+        Interface.draw_text(self.resources.screen, name, 32, self.width * 0.16, self.height * 0.15 + self.height * 0.1 * number, self.resources.font_name, (0, 0, 0))
+        Interface.draw_text(self.resources.screen, str(score), 32, self.width * 0.6, self.height * 0.15 + self.height * 0.1 * number, self.resources.font_name, (0, 0, 0))
 
     def get_leaderboard(self):
         leaderboard = []
