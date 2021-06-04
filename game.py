@@ -210,28 +210,7 @@ class Game:
                                  self.player.lives, self.resources.player_mini_img)
         pygame.display.flip()
 
-    def reset(self):
-        self.score = 0
-        self.player.gun_level = 0
-        self.player.lives = 3
-        self.player.speedx = 0
-        self.player.speedy = 0
-        self.player.set_position(*self.player.start_position.values())
-        self.isGameOver = False
-        self.need_input = False
-        self.player.HP = 100
-        self.player.rot = 0
-        self.player.player_with_shield_image = self.resources.player_with_shield_image
-        self.player.current_image = self.resources.player_img
-        self.player.image = self.player.current_image.copy()
-        for i in self.asteroids:
-            i.kill()
-        for i in self.power_up_sprites:
-            i.kill()
-        for i in self.ufos:
-            i.kill()
-        self.lvl_system.current_level = 0
-        self.lvl_system.set_first_level()
+
 
     def pause(self):
         Interface.draw_text_centered(self.resources.screen, "Pause", 52, self.resources.WIDTH / 2,

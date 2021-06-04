@@ -29,7 +29,8 @@ class MainMenu:
         screen.blit(text_surface, text_rect)
 
     def menu(self):
-        pygame.init()
+        pygame.mixer.music.load(self.resources.sound_dir + "music.ogg")
+        pygame.mixer.init()
         pygame.mixer.music.play()
         click = False
         while True:
@@ -49,9 +50,8 @@ class MainMenu:
             button3.draw()
             if button1.rect.collidepoint(mx, my):
                 if click:
-                    self.game.reset()
-                    self.game.run()
-
+                    game = self.game(self.resources)
+                    game.run()
             if button2.rect.collidepoint(mx, my):
                 if click:
                     self.leaderboard.run()
