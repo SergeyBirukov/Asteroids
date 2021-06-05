@@ -6,8 +6,8 @@ from player import Player
 import levels
 from interface import Interface
 from powerUp import Pow
-import sys
 from leaderboard import LeaderBoard
+import sys
 
 FPS = 60
 
@@ -56,9 +56,16 @@ class Game:
         self.all_sprites.add(a)
         self.asteroids.add(a)
 
+    def new_power_up(self, pos_x, pos_y, type=None):
+        if type == None:
+            pow = Pow(pos_x, pos_y, self.resources.img_dir)
+        else:
+            pow = Pow(pos_x, pos_y, self.resources.img_dir, type)
+        self.all_sprites.add(pow)
+        self.power_up_sprites.add(pow)
+
     def get_player_position(self):
         return self.player.rect.centerx, self.player.rect.centery
-
 
     def new_UFO(self):
         now = pygame.time.get_ticks()
@@ -67,7 +74,6 @@ class Game:
             u = UFO.UFO(self.resources.ufo_image, self.resources.lazer, self.resources.WIDTH, self.resources.HEIGHT)
             self.all_sprites.add(u)
             self.ufos.add(u)
-
 
     def _UFO_try_to_shoot(self, u):
         bullet = u.shoot(pygame.time.get_ticks(), self.get_player_position())
@@ -89,8 +95,7 @@ class Game:
         self.click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                self.quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.isPause = not self.isPause
@@ -120,13 +125,16 @@ class Game:
         if key_state[pygame.K_RIGHT] or key_state[pygame.K_d]:
             self.player.rotate_right()
         if key_state[pygame.K_SPACE]:
-            now = pygame.time.get_ticks()
-            if now - self.player.last_shoot > self.player.shoot_delay:
-                pygame.mixer.Sound.play(self.resources.shoot_sound)
-                bullet = self.player.shoot()
-                self.all_sprites.add(bullet)
-                self.bullets.add(bullet)
-                self.player.last_shoot = now
+            self._process_player_shoot()
+
+    def _process_player_shoot(self):
+        now = pygame.time.get_ticks()
+        if now - self.player.last_shoot > self.player.shoot_delay:
+            pygame.mixer.Sound.play(self.resources.shoot_sound)
+            bullet = self.player.shoot()
+            self.all_sprites.add(bullet)
+            self.bullets.add(bullet)
+            self.player.last_shoot = now
 
     def _process_hits(self):
         bullet_hits = pygame.sprite.groupcollide(self.asteroids, self.bullets, True, True, collided=pygame.sprite.collide_mask)
@@ -137,9 +145,7 @@ class Game:
             if hit.type == 2:
                 rnd = random.randrange(1, 10)
                 if rnd > 5:
-                    pow = Pow(hit.rect.center, self.resources.img_dir)
-                    self.all_sprites.add(pow)
-                    self.power_up_sprites.add(pow)
+                    self.new_power_up(hit.rect.centerx, hit.rect.centery)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 1)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 1)
             if hit.type == 1:
@@ -147,9 +153,7 @@ class Game:
                 self.new_asteroid(hit.rect.x, hit.rect.y, 0)
             if hit.type == "UFO":
                 hit.HP -= 1
-                print(hit.HP)
                 self.score += 70 - hit.radius
-
 
         player_hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
         for hit in player_hits:
@@ -166,11 +170,6 @@ class Game:
         for hit in ufos_hits:
             if not self.player.is_shield_on:
                 self.player.HP -= hit.radius
-            if self.player.HP <= 0:
-                self.player.hide()
-                self.player.lives -= 1
-                self.player.gun_level = 0
-                self.player.HP = 100
 
         ufo_bullets_hits = pygame.sprite.spritecollide(self.player, self.ufo_bullets, True, collided=pygame.sprite.collide_mask)
         for hit in ufo_bullets_hits:
@@ -208,8 +207,6 @@ class Game:
             Interface.draw_lives(self.resources.screen, self.resources.WIDTH - 100, 5,
                                  self.player.lives, self.resources.player_mini_img)
         pygame.display.flip()
-
-
 
     def pause(self):
         Interface.draw_text_centered(self.resources.screen, "Pause", 52, self.resources.WIDTH / 2,
@@ -251,6 +248,10 @@ class Game:
                 self.leaderboard.run()
                 self.running = False
 
+    def quit(self):
+        pygame.quit()
+        sys.exit()
+
     def run(self):
         self.running, self.isPause = True, False
         clock = pygame.time.Clock()
@@ -262,6 +263,8 @@ class Game:
             self._process_events()
             self._process_hits()
             self.player.idle()
+            if self.player.HP <= 0:
+                self.player.respawn()
             for u in self.ufos:
                 self._UFO_try_to_shoot(u)
                 self._keep_on_screen(u)
@@ -275,6 +278,7 @@ class Game:
                 self.all_sprites.update()
                 self.new_UFO()
             if self.player.lives == 0:
+                self.player.kill()
                 self.isGameOver = True
             self._draw()
             self.clock.tick(60)

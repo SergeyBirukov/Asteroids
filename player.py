@@ -111,6 +111,12 @@ class Player(pygame.sprite.Sprite):
         self.current_image = self.player_image
         self.current_image.set_colorkey(BLACK)
 
+    def respawn(self):
+        self.hide()
+        self.lives -= 1
+        self.gun_level = 0
+        self.HP = 100
+
     def update(self):
 
         self.xPos += self.speedx

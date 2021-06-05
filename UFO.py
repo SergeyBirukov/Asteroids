@@ -80,13 +80,13 @@ class UFO(pygame.sprite.Sprite):
 
     def shoot(self, moment, player_pos):
         if moment - self.last_shoot > self.shoot_delay:
-            print(player_pos, "and", self.rect.centerx, self.rect.centery)
+            # print(player_pos, "and", self.rect.centerx, self.rect.centery)
             dx = player_pos[0] - self.rect.centerx
             dy = player_pos[1] - self.rect.centery
             rads = math.atan2(-dy, dx)
             rads %= 2 * math.pi
             degs = math.degrees(rads)
-            print(degs)
+            # print(degs)
             self.last_shoot = moment
             return Bullet(self.rect.centerx, self.rect.centery, self.bullet, degs)
 
