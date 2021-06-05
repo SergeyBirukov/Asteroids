@@ -28,7 +28,7 @@ class UFO(pygame.sprite.Sprite):
         self.xPos = 0
         self.yPos = 0
         self.acceleration = 0.3
-        self.shoot_delay = 3000
+        self.shoot_delay = 1000
         self.last_shoot = pygame.time.get_ticks()
         self.offset = 90
         self.mask = pygame.mask.from_surface(self.image)
@@ -128,7 +128,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.centery = y
         self.rect.centerx = x
         self.radius = 20
-        self.speed_const = 7
+        self.speed_const = 12
         self.life_timer = pygame.time.get_ticks()
         self.life_time = 2000
         self.mask = pygame.mask.from_surface(self.image)

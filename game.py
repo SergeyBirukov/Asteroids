@@ -33,7 +33,7 @@ class Game:
         self.bullets = pygame.sprite.Group()
         self.ufo_bullets = pygame.sprite.Group()
         self.power_up_sprites = pygame.sprite.Group()
-        self.player = Player(resources.player_img, resources.player_with_shield_image, resources.lazer,
+        self.player = Player(resources.player_img, resources.player_with_shield_image, resources.laser,
                              resources.WIDTH / 2, resources.HEIGHT - 250)
         self.all_sprites.add(self.player)
         self.lvl_system = levels.LevelSystem(self, self.player, self.resources.WIDTH, self.resources.HEIGHT)
@@ -71,7 +71,7 @@ class Game:
         now = pygame.time.get_ticks()
         if now - self.ufo_last_spawned > self.ufo_spawn_delay:
             self.ufo_last_spawned = now
-            u = UFO.UFO(self.resources.ufo_image, self.resources.lazer, self.resources.WIDTH, self.resources.HEIGHT)
+            u = UFO.UFO(self.resources.ufo_image, self.resources.UFO_laser, self.resources.WIDTH, self.resources.HEIGHT)
             self.all_sprites.add(u)
             self.ufos.add(u)
 
