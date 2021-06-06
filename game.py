@@ -115,7 +115,7 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.isPause = not self.isPause
-                if event.key == pygame.K_DOWN and not self.isPause and not self.isGameOver:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s and not self.isPause and not self.isGameOver:
                     self.player.hyperspace()
                     pygame.mixer.Sound.play(self.resources.teleport_sound)
                 elif self.need_input:
