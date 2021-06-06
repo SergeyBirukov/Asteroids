@@ -114,7 +114,7 @@ class Game:
         key_state = pygame.key.get_pressed()
         if key_state[pygame.K_UP] or key_state[pygame.K_w]:
             self.player.move_up()
-        if key_state[pygame.K_DOWN]:
+        if key_state[pygame.K_DOWN] or key_state[pygame.K_s]:
             now = pygame.time.get_ticks()
             if now - self.player.last_hyperspace > self.player.hyperspace_delay:
                 pygame.mixer.Sound.play(self.resources.teleport_sound)
