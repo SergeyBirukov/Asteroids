@@ -14,7 +14,7 @@ class Resources:
         self.explosion_sound = pygame.mixer.Sound(path.join(self.sound_dir, "Explosion1.wav"))
         self.explosion_sound2 = pygame.mixer.Sound(path.join(self.sound_dir, "Explosion2.wav"))
         self.explosion_sound.set_volume(0.8)
-        self.bonus_sound = pygame.mixer.Sound(path.join(self.sound_dir, "bonus.mp3"))
+        self.bonus_sound = pygame.mixer.Sound(path.join(self.sound_dir, "bonus.wav"))
         self.teleport_sound = pygame.mixer.Sound(path.join(self.sound_dir, "teleport.wav"))
         self.teleport_sound.set_volume(2)
         self.leaderboard_filename = "leaderboard"
