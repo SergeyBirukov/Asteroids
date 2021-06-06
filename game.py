@@ -36,7 +36,7 @@ class Game:
         self.ufo_spawn_delay = 20000
 
         self.player = Player(self.resources.player_img, self.resources.player_with_shield_image,
-                             self.resources.laser,self.resources.WIDTH / 2, self.resources.HEIGHT - 250)
+                             self.resources.laser, self.resources.WIDTH / 2, self.resources.HEIGHT - 250)
         self.all_sprites.add(self.player)
         self.lvl_system = levels.LevelSystem(self, self.player, self.resources.WIDTH, self.resources.HEIGHT)
         self.lvl_system.set_next_level()
@@ -50,6 +50,7 @@ class Game:
         self.input_text = ""
         self.score = 0
         self.power_up_probability = 5
+        self.temp = 0
 
     def new_asteroid(self, position_x, position_y, size):
         if size == 2:
@@ -114,6 +115,10 @@ class Game:
                 self.quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    if not self.isPause:
+                        self.temp = self.ufo_last_spawned
+                    else:
+                        self.ufo_last_spawned = self.temp
                     self.isPause = not self.isPause
                 if (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.isPause and not self.isGameOver:
                     self.player.hyperspace()
@@ -267,7 +272,6 @@ class Game:
         clock = pygame.time.Clock()
         while self.running:
             self.mx, self.my = pygame.mouse.get_pos()
-            clock.tick(FPS)
             if len(self.asteroids) == 0:
                 self.lvl_system.set_next_level()
             self._process_events()
