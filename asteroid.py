@@ -18,8 +18,15 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.y = position_y
         self.xPos = 0
         self.yPos = 0
-        self.speedy = random.uniform(-5, 5)
-        self.speedx = random.uniform(-5, 5)
+        if self.type == 2:
+            self.speedy = random.choice([-3, -2, -1, 1, 2, 3])
+            self.speedx = random.choice([-3, -2, -1, 1, 2, 3])
+        if self.type == 1:
+            self.speedy = random.choice([-4, -3, -2, 2, 3, 4])
+            self.speedx = random.choice([-4, -3, -2, 2, 3, 4])
+        if self.type == 0:
+            self.speedy = random.choice([-5, -4, -3, 3, 4, 5])
+            self.speedx = random.choice([-5, -4, -3, 3, 4, 5])
         self.rot = 0
         self.rot_speed = random.randrange(-8, 8)
         self.mask = pygame.mask.from_surface(self.image)

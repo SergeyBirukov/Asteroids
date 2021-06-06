@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 
 BLACK = (0, 0, 0)
 
@@ -12,41 +13,47 @@ class Player(pygame.sprite.Sprite):
         self.current_image = player_image
         self.current_image.set_colorkey(BLACK)
         self.image = self.current_image.copy()
-        self.rect = self.image.get_rect()
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-        self.type = "Player"
-        self.radius = 20
         self.bullet = bullet_image
+
         self.start_position = {'x': position_x, 'y': position_y}
+        self.rect = self.image.get_rect()
         self.rect.centerx, self.rect.centery = self.start_position['x'], self.start_position['y']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rot = 0
+        self.type = "Player"
+
+        self.radius = 20
         self.max_speed = 5
         self.speedx = 0
         self.speedy = 0
         self.xPos = 0
         self.yPos = 0
         self.acceleration = 0.3
-        self.HP = 100
-        self.shoot_delay = 250
-        self.last_shoot = pygame.time.get_ticks()
+        self.rot_speed = 3
+        self.max_HP = 100
+        self.HP = self.max_HP
+        self.max_lives = 3
         self.lives = 3
         self.gun_level = 0
-        self.gun_powerup_time = 10000
-        self.gun_timer = pygame.time.get_ticks()
+
+
         self.is_shield_on = False
-        self.shield_timer = pygame.time.get_ticks()
-        self.shield_time = 5000
-        self.hidden = False
-        self.hide_timer = pygame.time.get_ticks()
-        self.hide_time = 1000
         self.can_shoot = True
-        self.rot = 0
-        self.offset = 90
-        self.rot_speed = 3
-        self.last_hyperspace = pygame.time.get_ticks()
-        self.hyperspace_delay = 250
+        self.hidden = False
+
+        self.shield_timer = pygame.time.get_ticks()
         self.last_update = pygame.time.get_ticks()
-        self.mask = pygame.mask.from_surface(self.image)
+        self.last_shoot = pygame.time.get_ticks()
+        self.hide_timer = pygame.time.get_ticks()
+        self.gun_timer = pygame.time.get_ticks()
+        self.hyperspace_timer = pygame.time.get_ticks()
+
+        self.gun_power_up_time = 10000
+        self.shoot_delay = 250
+        self.hyperspace_delay = 250
+        self.shield_time = 5000
+        self.hide_time = 100
+        self.offset = 90
 
     def gun_level_up(self):
         self.gun_timer = pygame.time.get_ticks()
@@ -118,16 +125,15 @@ class Player(pygame.sprite.Sprite):
         self.HP = 100
 
     def update(self):
-
         self.xPos += self.speedx
         self.yPos += self.speedy
-        if pygame.time.get_ticks() - self.hide_timer > self.hide_time and self.hidden == True:
+        if pygame.time.get_ticks() - self.hide_timer > self.hide_time and self.hidden is True:
             self.hidden = False
             self.can_shoot = True
             self.rect.centerx, self.rect.centery = self.start_position['x'], self.start_position['y']
         if pygame.time.get_ticks() - self.shield_timer > self.shield_time:
             self.shield_off()
-        if pygame.time.get_ticks() - self.gun_timer > self.gun_powerup_time and self.gun_level > 0:
+        if pygame.time.get_ticks() - self.gun_timer > self.gun_power_up_time and self.gun_level > 0:
             self.gun_level -= 1
         if self.xPos >= 1:
             part = math.floor(self.xPos)
@@ -149,6 +155,11 @@ class Player(pygame.sprite.Sprite):
 
     def set_position(self, x, y):
         self.rect.centerx, self.rect.centery = x, y
+
+    def hyperspace(self):
+        if pygame.time.get_ticks() - self.hyperspace_timer > self.hyperspace_delay:
+            self.set_position(random.randrange(0, 800), random.randrange(0, 800))
+            self.hyperspace_timer = pygame.time.get_ticks()
 
 
 class Bullet(pygame.sprite.Sprite):

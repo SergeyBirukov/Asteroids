@@ -5,13 +5,16 @@ from os import path
 BLACK = (0, 0, 0)
 
 
-class Pow(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y, img_dir, type=random.choice(["gun", "shield", "live"])):
+class PowerUp(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, img_dir, type=None ):
         pygame.sprite.Sprite.__init__(self)
         self.powerup_images = {"shield": pygame.image.load(path.join(img_dir, "shield.png")).convert(),
                                "gun": pygame.image.load(path.join(img_dir, "bolt.png")).convert(),
                                "live": pygame.image.load(path.join(img_dir, "Heart.png")).convert()}
-        self.type = type
+        if type is None:
+            self.type = random.choice(["shield", "gun", "live"])
+        else:
+            self.type = type
         self.image = self.powerup_images[self.type]
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
