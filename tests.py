@@ -11,6 +11,7 @@ from time import sleep
 class TestGame(unittest.TestCase):
     def setUp(self):
         pygame.init()
+        pygame.mixer.init()
         self.resources = Resources()
         self.game = Game(self.resources)
         self.game_thread = Thread(target=self.game.run)
