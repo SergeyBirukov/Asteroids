@@ -122,7 +122,7 @@ class Game:
                     self.isPause = not self.isPause
                 if (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.isPause and not self.isGameOver:
                     self.player.hyperspace()
-                    pygame.mixer.Sound.play(self.resources.teleport_sound)
+                    #pygame.mixer.Sound.play(self.resources.teleport_sound)
                 elif self.need_input:
                     self._process_input(event)
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -142,7 +142,7 @@ class Game:
     def _process_player_shoot(self):
         now = pygame.time.get_ticks()
         if now - self.player.last_shoot > self.player.shoot_delay:
-            pygame.mixer.Sound.play(self.resources.shoot_sound)
+            #pygame.mixer.Sound.play(self.resources.shoot_sound)
             bullet = self.player.shoot()
             self.all_sprites.add(bullet)
             self.bullets.add(bullet)
@@ -153,7 +153,7 @@ class Game:
         bullet_hits.update(pygame.sprite.groupcollide(self.ufos, self.bullets, False, True, collided=pygame.sprite.collide_mask))
         for hit in bullet_hits.keys():
             self.score += 70 - hit.radius
-            pygame.mixer.Sound.play(self.resources.explosion_sound2)
+            #pygame.mixer.Sound.play(self.resources.explosion_sound2)
             if hit.type == 2:
                 rnd = random.randrange(1, 10)
                 if rnd-self.power_up_probability > 0:
@@ -169,7 +169,7 @@ class Game:
 
         player_hits = pygame.sprite.spritecollide(self.player, self.asteroids, True, collided=pygame.sprite.collide_mask)
         for hit in player_hits:
-            pygame.mixer.Sound.play(self.resources.explosion_sound)
+            #pygame.mixer.Sound.play(self.resources.explosion_sound)
             if not self.player.is_shield_on:
                 self.player.HP -= hit.radius
             if self.player.HP <= 0:
@@ -195,7 +195,7 @@ class Game:
 
         bonus_hits = pygame.sprite.spritecollide(self.player, self.power_up_sprites, True, collided=pygame.sprite.collide_mask)
         for hit in bonus_hits:
-            pygame.mixer.Sound.play(self.resources.bonus_sound)
+            #pygame.mixer.Sound.play(self.resources.bonus_sound)
             if hit.type == "live" and self.player.lives < 3:
                 self.player.lives += 1
             if hit.type == "gun" and self.player.gun_level <2:
