@@ -29,10 +29,10 @@ class MainMenu:
         screen.blit(text_surface, text_rect)
 
     def menu(self):
-        pygame.mixer.music.load(path.join(self.resources.sound_dir, "music.ogg"))
-        pygame.mixer.init()
-        pygame.mixer.music.set_volume(0.3)
-        pygame.mixer.music.play(loops=-1)
+        # pygame.mixer.music.load(path.join(self.resources.sound_dir, "music.ogg"))
+        # pygame.mixer.init()
+        # pygame.mixer.music.set_volume(0.3)
+        # pygame.mixer.music.play(loops=-1)
         click = False
         while True:
             mx, my = pygame.mouse.get_pos()
