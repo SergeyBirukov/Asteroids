@@ -8,15 +8,15 @@ HEIGHT = 800
 class Resources:
     def __init__(self):
         self.img_dir = path.join(path.dirname(__file__), "img")
-        self.sound_dir = path.join(path.dirname(__file__), "sound")
+        # self.sound_dir = path.join(path.dirname(__file__), "sound")
         # self.shoot_sound = pygame.mixer.Sound(path.join(self.sound_dir,"Laser_Shoot.wav"))
-        self.shoot_sound.set_volume(0.4)
+        # self.shoot_sound.set_volume(0.4)
         # self.explosion_sound = pygame.mixer.Sound(path.join(self.sound_dir, "Explosion1.wav"))
         # self.explosion_sound2 = pygame.mixer.Sound(path.join(self.sound_dir, "Explosion2.wav"))
-        self.explosion_sound.set_volume(0.8)
+        # self.explosion_sound.set_volume(0.8)
         # self.bonus_sound = pygame.mixer.Sound(path.join(self.sound_dir, "bonus.wav"))
         # self.teleport_sound = pygame.mixer.Sound(path.join(self.sound_dir, "teleport.wav"))
-        self.teleport_sound.set_volume(2)
+        # self.teleport_sound.set_volume(2)
         self.leaderboard_filename = "leaderboard"
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
