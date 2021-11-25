@@ -48,3 +48,4 @@ jobs:
       - name: Check coverage
         run: |
           coverage run -m unittest
+          coverage report -m
