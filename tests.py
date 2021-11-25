@@ -2,6 +2,7 @@ import unittest
 import pygame
 import os
 os.environ['SDL_AUDIODRIVER'] = 'dsp'
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 from resources import Resources
 from game import Game
 from threading import Thread
