@@ -1,5 +1,7 @@
 import unittest
 import pygame
+import os
+os.environ['SDL_AUDIODRIVER'] = 'dsp'
 from resources import Resources
 from game import Game
 from threading import Thread
