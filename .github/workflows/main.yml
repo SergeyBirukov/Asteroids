@@ -44,7 +44,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with unittest
         run: |
-          SDL_VIDEODRIVER SDL_AUDIODRIVER=dummy python -m unittest
+          SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy python -m unittest
           
       - name: Check coverage
         run: |
