@@ -35,7 +35,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 coverage pygame
-          IF EXIST -f requirements.txt ; then pip install -r requirements.txt; fi
         
       - name: Lint with flake8
         run: |
