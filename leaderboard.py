@@ -14,6 +14,9 @@ class LeaderBoard:
         self.running = False
         self.clock = pygame.time.Clock()
         self.mx, self.my = pygame.mouse.get_pos()
+        self.buttons = [Interface.Button(self.resources.screen, self.width / 2 - 100,
+                                       self.height-200,
+                                       200, 50, "Main menu", self.resources.font_name, self.exit)]
 
     def save_score(self, name, score):
         with shelve.open(self.filename) as lb:
@@ -35,6 +38,9 @@ class LeaderBoard:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.click = True
 
+    def exit(self):
+        self.running = False
+
     def run(self):
         self.running = True
         lb = self.get_leaderboard()
@@ -42,14 +48,9 @@ class LeaderBoard:
         self.resources.screen.fill((0, 0, 0))
         while self.running:
             self.mx, self.my = pygame.mouse.get_pos()
-            button1 = Interface.Button(self.resources.screen, self.width / 2 - 100,
-                                       self.height-200,
-                                       200, 50, "Main menu", self.resources.font_name)
-            button1.draw()
             self._process_events()
-            if button1.rect.collidepoint(self.mx, self.my):
-                if self.click:
-                    self.running = False
+            for button in self.buttons:
+                button.handle(self.mx, self.my, self.click)
             Interface.draw_text_centered(self.resources.screen, "Name", 32, self.width * 0.2, self.height * 0.1,
                                          self.resources.font_name, (255, 255, 255))
             Interface.draw_text_centered(self.resources.screen, "Score", 32, self.width * 0.6, self.height * 0.1,

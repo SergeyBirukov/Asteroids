@@ -51,6 +51,13 @@ class Game:
         self.score = 0
         self.power_up_probability = 5
         self.temp = 0
+        self.game_over_buttons = [
+            Interface.Button(self.resources.screen, self.resources.screen.get_width() * 0.75, self.resources.screen.get_height() * 0.9,
+                             150, 50, "Main menu", self.resources.font_name, self.stop_game),
+            Interface.Button(self.resources.screen, self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2 * 1.3,
+                             200, 50, "Save score", self.resources.font_name, self.save_score_action)]
+        self.pause_buttons = [Interface.Button(self.resources.screen, self.resources.WIDTH * 0.75, self.resources.HEIGHT * 0.9,
+                                               150, 50, "Main menu", self.resources.font_name, self.stop_game)]
 
     def new_asteroid(self, position_x, position_y, size):
         if size == 2:
@@ -131,7 +138,7 @@ class Game:
             return
         key_state = pygame.key.get_pressed()
         if key_state[pygame.K_UP] or key_state[pygame.K_w]:
-            self.player.move_up()
+            self.player.move_up(self.player.offset)
         if key_state[pygame.K_LEFT] or key_state[pygame.K_a]:
             self.player.rotate(is_left=True)
         if key_state[pygame.K_RIGHT] or key_state[pygame.K_d]:
@@ -156,7 +163,7 @@ class Game:
             pygame.mixer.Sound.play(self.resources.explosion_sound2)
             if hit.type == 2:
                 rnd = random.randrange(1, 10)
-                if rnd-self.power_up_probability > 0:
+                if rnd - self.power_up_probability > 0:
                     self.new_power_up(hit.rect.centerx, hit.rect.centery)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 1)
                 self.new_asteroid(hit.rect.x, hit.rect.y, 1)
@@ -198,7 +205,7 @@ class Game:
             pygame.mixer.Sound.play(self.resources.bonus_sound)
             if hit.type == "live" and self.player.lives < 3:
                 self.player.lives += 1
-            if hit.type == "gun" and self.player.gun_level <2:
+            if hit.type == "gun" and self.player.gun_level < 2:
                 self.player.gun_level_up()
             if hit.type == "shield":
                 self.player.shield_on()
@@ -216,52 +223,45 @@ class Game:
                                          18, self.resources.WIDTH / 2, 10,
                                          self.resources.font_name, WHITE)
             Interface.draw_shield_bar(self.resources.screen, 5, 5, self.player.HP)
-            Interface.draw_lives(self.resources.screen, self.resources.WIDTH*0.9, 5,
+            Interface.draw_lives(self.resources.screen, self.resources.WIDTH * 0.9, 5,
                                  self.player.lives, self.resources.player_mini_img)
         pygame.display.flip()
 
     def pause(self):
         Interface.draw_text_centered(self.resources.screen, "Pause", 52, self.resources.WIDTH / 2,
-                                     (self.resources.HEIGHT / 2)*0.9, self.resources.font_name, WHITE)
-        button1 = Interface.Button(self.resources.screen, self.resources.WIDTH*0.75, self.resources.HEIGHT*0.9,
-                                   150, 50, "Main menu", self.resources.font_name)
-        button1.draw()
-        if button1.rect.collidepoint(self.mx, self.my):
-            if self.click:
-                self.running = False
+                                     (self.resources.HEIGHT / 2) * 0.9, self.resources.font_name, WHITE)
+        for button in self.pause_buttons:
+            button.handle(self.mx, self.my, self.click)
+
+    def stop_game(self):
+        self.running = False
+
+    def save_score_action(self):
+        if self.input_text != "":
+            self.leaderboard.save_score(self.input_text, self.score)
+            self.input_text = ""
+            self.leaderboard.run()
+            self.running = False
 
     def game_over(self):
         self.need_input = True
         Interface.draw_text_centered(self.resources.screen, "Game Over",
-                                     52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - self.resources.HEIGHT*0.2,
+                                     52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - self.resources.HEIGHT * 0.2,
                                      self.resources.font_name, RED)
         Interface.draw_text_centered(self.resources.screen, "Your score: " + str(self.score),
                                      52, self.resources.WIDTH / 2, self.resources.HEIGHT / 2 - self.resources.HEIGHT * 0.1,
                                      self.resources.font_name, WHITE)
-        button1 = Interface.Button(self.resources.screen, self.resources.screen.get_width() * 0.75, self.resources.screen.get_height() * 0.9,
-                                   150, 50, "Main menu", self.resources.font_name)
-        button2 = Interface.Button(self.resources.screen, self.resources.screen.get_width() / 2 - 100, self.resources.screen.get_height() / 2*1.3,
-                         200, 50, "Save score", self.resources.font_name)
-        entry_field = pygame.Rect(self.resources.screen.get_width()*0.15, self.resources.screen.get_height() / 2,
-                         self.resources.screen.get_width()*0.7, 50)
+        entry_field = pygame.Rect(self.resources.screen.get_width() * 0.15, self.resources.screen.get_height() / 2,
+                                  self.resources.screen.get_width() * 0.7, 50)
         pygame.draw.rect(self.resources.screen, WHITE, entry_field)
         Interface.draw_text_centered(self.resources.screen, "Enter your name: ", 30,
-                                     self.resources.screen.get_width() * 0.28, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
+                                     self.resources.screen.get_width() * 0.28, self.resources.screen.get_height() / 2 + 5, self.resources.font_name,
+                                     BLACK)
         Interface.draw_text(self.resources.screen, self.input_text, 30,
-                            self.resources.screen.get_width() / 2 - self.resources.WIDTH*0.05, self.resources.screen.get_height() / 2 + 5, self.resources.font_name, BLACK)
-
-        button1.draw()
-        button2.draw()
-        if button1.rect.collidepoint(self.mx, self.my):
-            if self.click:
-                self.running = False
-
-        if button2.rect.collidepoint(self.mx, self.my):
-            if self.click and self.input_text != "":
-                self.leaderboard.save_score(self.input_text, self.score)
-                self.input_text = ""
-                self.leaderboard.run()
-                self.running = False
+                            self.resources.screen.get_width() / 2 - self.resources.WIDTH * 0.05, self.resources.screen.get_height() / 2 + 5,
+                            self.resources.font_name, BLACK)
+        for button in self.game_over_buttons:
+            button.handle(self.mx, self.my, self.click)
 
     def quit(self):
         pygame.quit()
@@ -296,4 +296,3 @@ class Game:
                 self.isGameOver = True
             self._draw()
             self.clock.tick(60)
-

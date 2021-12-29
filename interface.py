@@ -42,7 +42,7 @@ class Interface:
         pygame.draw.rect(screen, WHITE, outline_rect, 2)
 
     class Button:
-        def __init__(self, screen, x, y, size_x, size_y, text, font, button_color=(255, 255, 255), text_color=(0, 0, 0)):
+        def __init__(self, screen, x, y, size_x, size_y, text, font, action, button_color=(255, 255, 255), text_color=(0, 0, 0)):
             self.text = text
             self.pos_x, self.pos_y = x, y
             self.size_x, self.size_y = size_x, size_y
@@ -51,11 +51,17 @@ class Interface:
             self.screen = screen
             self.font = font
             self.rect = pygame.Rect(self.pos_x, self.pos_y, self.size_x, self.size_y)
+            self.action = action
 
         def draw(self):
             pygame.draw.rect(self.screen, self.button_color, self.rect)
             Interface.draw_text_centered(self.screen, self.text, floor(self.size_y * 0.6), (2 * self.pos_x + self.size_x) / 2,
                                          (1.92 * self.pos_y + self.size_y) / 2, self.font, self.text_color)
+
+        def handle(self, mx, my, click):
+            self.draw()
+            if self.rect.collidepoint(mx, my) and click:
+                self.action()
 
 
 
