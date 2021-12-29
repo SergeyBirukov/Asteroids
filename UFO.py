@@ -1,16 +1,18 @@
-#confirmed
+# confirmed
 import pygame
 import math
 import random
+from MovingObject import MovingObject
+from Bullet import Bullet
 
 BLACK = (0, 0, 0)
 
 
-class UFO(pygame.sprite.Sprite):
-    def __init__(self, ufo_image, bullet_image, width, height):
-        pygame.sprite.Sprite.__init__(self)
-        self.ufo_image = ufo_image
-        self.current_image = ufo_image
+class UFO(MovingObject):
+    def __init__(self, image, bullet_image, width, height):
+        MovingObject.__init__(self)
+        self.ufo_image = image
+        self.current_image = image
         self.current_image.set_colorkey(BLACK)
         self.image = self.current_image.copy()
         self.rect = self.image.get_rect()
@@ -44,7 +46,7 @@ class UFO(pygame.sprite.Sprite):
         if start_from_side:
             self.start_position = {'x': start_from_end * width, 'y': random_start_pos}
             if start_from_end:
-                if random_start_pos > height/2:
+                if random_start_pos > height / 2:
                     self.rot = random.uniform(180, 270)
                 else:
                     self.rot = random.uniform(90, 180)
@@ -72,10 +74,6 @@ class UFO(pygame.sprite.Sprite):
         if abs(self.speedx) < self.speed:
             self.speedx += self.acceleration * math.cos(math.radians(self.rot) % 360)
 
-
-    def set_position(self, x, y):
-        self.rect.centerx, self.rect.centery = x, y
-
     def shoot(self, moment, player_pos):
         if moment - self.last_shoot > self.shoot_delay:
             dx = player_pos[0] - self.rect.centerx
@@ -84,7 +82,7 @@ class UFO(pygame.sprite.Sprite):
             rads %= 2 * math.pi
             degs = math.degrees(rads)
             self.last_shoot = moment
-            return Bullet(self.rect.centerx, self.rect.centery, self.bullet, degs)
+            return UFOBullet(self.rect.centerx, self.rect.centery, self.bullet, degs)
 
     def update(self):
         if self.HP <= 0:
@@ -92,48 +90,15 @@ class UFO(pygame.sprite.Sprite):
         self.move_up()
         self.xPos += self.speedx
         self.yPos += self.speedy
-        if self.xPos >= 1:
-            part = math.floor(self.xPos)
-            self.rect.x += part
-            self.xPos -= part
-        if self.xPos <= -1:
-            part = math.ceil(self.xPos)
-            self.rect.x += part
-            self.xPos -= part
-        if self.yPos >= 1:
-            part = math.floor(self.yPos)
-            self.rect.y += part
-            self.yPos -= part
-        if self.yPos <= -1:
-            part = math.ceil(self.yPos)
-            self.rect.y += part
-            self.yPos -= part
+        self.rect.x, self.xPos = self.update_position(self.rect.x, self.xPos)
+        self.rect.y, self.yPos = self.update_position(self.rect.y, self.yPos)
         self.mask = pygame.mask.from_surface(self.image)
 
 
-class Bullet(pygame.sprite.Sprite):
+class UFOBullet(Bullet):
     def __init__(self, x, y, bullet_image, rotation):
-        pygame.sprite.Sprite.__init__(self)
-        self.image_orig = bullet_image
-        self.image_orig.set_colorkey((0, 0, 0))
-        self.rot = rotation
-        self.offset = 90
-        self.image = pygame.transform.rotate(self.image_orig, rotation + self.offset)
-        self.rect = self.image.get_rect()
+        Bullet.__init__(self, x, y, bullet_image, rotation)
+        self.image = pygame.transform.rotate(self.image_orig, rotation+self.offset)
         self.type = "UFO_bullet"
-        self.rect.centery = y
-        self.rect.centerx = x
-        self.radius = 20
         self.speed_const = 12
-        self.life_timer = pygame.time.get_ticks()
-        self.life_time = 2000
-        self.mask = pygame.mask.from_surface(self.image)
-
-    def set_position(self, x, y):
-        self.rect.centerx, self.rect.centery = x, y
-
-    def update(self):
-        if pygame.time.get_ticks() - self.life_timer > self.life_time:
-            self.kill()
-        self.rect.y += -self.speed_const * math.sin(math.radians(self.rot) % 360)
-        self.rect.x += self.speed_const * math.cos(math.radians(self.rot) % 360)
+        self.radius = 20

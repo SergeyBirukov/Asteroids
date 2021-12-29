@@ -133,9 +133,9 @@ class Game:
         if key_state[pygame.K_UP] or key_state[pygame.K_w]:
             self.player.move_up()
         if key_state[pygame.K_LEFT] or key_state[pygame.K_a]:
-            self.player.rotate_left()
+            self.player.rotate(is_left=True)
         if key_state[pygame.K_RIGHT] or key_state[pygame.K_d]:
-            self.player.rotate_right()
+            self.player.rotate(is_left=False)
         if key_state[pygame.K_SPACE]:
             self._process_player_shoot()
 
